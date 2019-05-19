@@ -3,14 +3,13 @@ from hands import *
 
 class Deck:
     def __init__(self):
-        reset(self)
+        self.reset()
 
     def reset(self):
         self.cards = []
-        suits = ['hearts', 'diamonds', 'clubs', 'spades']
-        for j in range(len(suits)):
+        for s in Suit:
             for i in range(1, 14):
-                self.cards.append(Card(i, j))
+                self.cards.append(Card(i, s))
 
     def shuffle(self):
         random.shuffle(self.cards)
@@ -93,7 +92,7 @@ class Game:
                 hand_type = HandType.FULL_HOUSE
             else:
                 hand_type = HandType.ONE_PAIR
-        else if num_pairs == 2:
+        elif num_pairs == 2:
             hand_type = HandType.TWO_PAIR
 
         #check for straights

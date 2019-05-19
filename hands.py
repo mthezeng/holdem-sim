@@ -14,10 +14,13 @@ class Card:
         self.suit = suit
 
     def __str__(self):
-        if self.num in card_names:
-            return '{0}{1}'.format(card_names[self.num], self.suit.value)
+        if self.num in self.card_names:
+            return '{0}{1}'.format(self.card_names[self.num], self.suit.value)
         else:
             return '{0}{1}'.format(self.num, self.suit.value)
+
+    def __repr__(self):
+        return self.__str__()
 
 class Suit(Enum):
     HEARTS = 'h'
@@ -28,13 +31,12 @@ class Suit(Enum):
 class Hand:
     value = 0 # larger values indicate stronger hands
 
-    def __init__(self, cards, hand_type):
+    def __init__(self, cards):
         if len(cards) != 5:
             raise ValueError("a poker hand must be 5 cards")
         if not isinstance(handtype, HandType):
             raise TypeError("hand_type must be a HandType enum")
         self.cards = cards
-        self.hand_type = hand_type
 
     def __lt__(self, other):
         return self.value < other.value
@@ -51,9 +53,10 @@ class Hand:
 class StraightFlush(Hand):
     value = 9 # strongest hand in holdem poker
 
-    def __init__(self, cards, hand_type, high_card):
-        super().__init__(cards, hand_type)
-        self.high_card = high_card
+    def __init__(self, cards):
+        super().__init__(self, cards)
+        self.cards.sort(key=lambda card: card.num, reverse = True)
+        self.high_card = self.cards[0]
 
     def __lt__(self, other):
         if isinstance(other, StraightFlush):
