@@ -110,62 +110,41 @@ class StraightFlush(Hand):
         Card.full_name((self.high_num - 4) % 13)
         )
 
-class FourOfAKind(Hand):
-    value = 8
-
-    def __init__(self, quad_num, kicker):
-        if not isinstance(quad_num, int):
-            raise TypeError("quad_num must be an int, not {0}".format(type(quad_num)))
-        self.quad_num = quad_num
-        self.kicker = kicker
+"""FourOfAKind and FullHouse have very similar representations"""
+class TwoKindsHand(Hand):
+    """big is the number repeated more frequently than small in the hand"""
+    def __init__(self, big, small):
+        if not(isinstance(big, int)) or not(isinstance(small, int)):
+            raise TypeError("arguments must be ints")
+        self.big = big
+        self.small = small
 
     def __lt__(self, other):
-        if isinstance(other, FourOfAKind):
-            if self.quad_num == other.quad_num:
-                return self.kicker < other.kicker
-            return self.quad_num < other.quad_num
+        if type(self) == type(other):
+            if self.big == other.big:
+                return self.small < other.small
+            return self.big < other.big
         return super()
 
     def __gt__(self, other):
         return other.__lt__(self)
 
     def __eq__(self, other):
-        if isinstance(other, FourOfAKind):
-            return (self.quad_num == other.quad_num) and (self.kicker == other.kicker)
+        if type(self) == type(other):
+            return (self.big == other.big) and (self.small == other.small)
         return super()
 
     def __ne__(self, other):
         return not self.__eq__(self, other)
+
+class FourOfAKind(TwoKindsHand):
+    value = 8
 
     def __str__(self):
         return "Four of a kind, {0}s".format(Card.full_name(self.quad_num))
 
-class FullHouse(Hand):
+class FullHouse(TwoKindsHand):
     value = 7
-
-    def __init__(self, set, full):
-        if not(isinstance(set, int)) or not(isinstance(full, int)):
-            raise TypeError("set and full must be ints")
-        self.set = set
-        self.full = full
-
-    def __lt__(self, other):
-        if isinstance(other, FullHouse):
-            if self.set == other.set:
-                return self.full < other.full
-            return self.set < other.set
-        return super()
-
-    def __gt__(self, other):
-        return other.__lt__(self)
-
-    def __eq__(self, other):
-        if isinstance(other, FullHouse):
-            return (self.set == other.set) and (self.full == other.full)
-        return super()
-
-    def __ne__(self, other):
-        return not self.__eq__(self, other)
 
     def __str__(self):
         return "Full house, {0}s full of {1}s".format(
