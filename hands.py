@@ -119,6 +119,24 @@ class FourOfAKind(Hand):
         self.quad_num = quad_num
         self.kicker = kicker
 
+    def __lt__(self, other):
+        if isinstance(other, FourOfAKind):
+            if self.quad_num == other.quad_num:
+                return self.kicker < other.kicker
+            return self.quad_num < other.quad_num
+        return super()
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        if isinstance(other, FourOfAKind):
+            return (self.quad_num == other.quad_num) and (self.kicker == other.kicker)
+        return super()
+
+    def __ne__(self, other):
+        return not self.__eq__(self, other)
+
     def __str__(self):
         return "Four of a kind, {0}s".format(Card.full_name(self.quad_num))
 
