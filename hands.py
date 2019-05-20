@@ -2,6 +2,21 @@ from enum import Enum
 
 class Card:
     card_names = {1: 'A', 13: 'K', 12: 'Q', 11: 'J', 10: 'T'}
+    full_names = {
+    1: "ace",
+    2: "deuce",
+    3: "three",
+    4: "four",
+    5: "five",
+    6: "six",
+    7: "seven",
+    8: "eight",
+    9: "nine",
+    10: "ten",
+    11: "jack",
+    12: "queen",
+    13: "king"
+    }
 
     def __init__(self, number, suit):
         if not isinstance(number, int):
@@ -14,13 +29,19 @@ class Card:
         self.suit = suit
 
     def __str__(self):
+        return "{0} of {1}".format(self.full_names[self.num], self.suit.name.lower())
+
+    def __repr__(self):
         if self.num in self.card_names:
             return '{0}{1}'.format(self.card_names[self.num], self.suit.value)
         else:
             return '{0}{1}'.format(self.num, self.suit.value)
 
-    def __repr__(self):
-        return self.__str__()
+    def get_num(self):
+        return self.num
+
+    def get_suit(self):
+        return self.suit
 
 class Suit(Enum):
     HEARTS = 'h'
@@ -31,12 +52,8 @@ class Suit(Enum):
 class Hand:
     value = 0 # larger values indicate stronger hands
 
-    def __init__(self, cards):
-        if len(cards) != 5:
-            raise ValueError("a poker hand must be 5 cards")
-        if not isinstance(handtype, HandType):
-            raise TypeError("hand_type must be a HandType enum")
-        self.cards = cards
+    def __init__(self):
+        pass
 
     def __lt__(self, other):
         return self.value < other.value
@@ -53,10 +70,9 @@ class Hand:
 class StraightFlush(Hand):
     value = 9 # strongest hand in holdem poker
 
-    def __init__(self, cards):
-        super().__init__(self, cards)
-        self.cards.sort(key=lambda card: card.num, reverse = True)
-        self.high_card = self.cards[0]
+    def __init__(self, high_card):
+        super().__init__(self)
+        self.high_card = high_card
 
     def __lt__(self, other):
         if isinstance(other, StraightFlush):
@@ -73,11 +89,23 @@ class StraightFlush(Hand):
             return self.high_card == other.high_card
         return False
 
+    def __str__(self):
+        return "Straight flush, {0} to {1}".format(self.high_card, self.high_card - 4)
+
 class FourOfAKind(Hand):
     value = 8
 
+    def __init__(self, quad_card):
+        self.quad_card = quad_card
+
+    def __str__(self):
+        return "Four of a kind, ".format(str(self.quad_card))
+
 class FullHouse(Hand):
     value = 7
+
+    def __init__(self, set, full):
+        pass
 
 class Flush(Hand):
     value = 6

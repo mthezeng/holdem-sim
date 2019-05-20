@@ -61,21 +61,20 @@ class Game:
     """Static method that returns a player's best hand
     given hole cards and community cards"""
     def determine_hand(player):
-        best_hand = []
-        hand_type = HandType.HIGH_CARD
         cards_available = player.cards + self.board
-        cards_available.sort(key=lambda card: card.num, reverse = True)
+        cards_available.sort(key=lambda card: card.get_num(), reverse = True)
 
         #start with high card hand
         best_hand = cards_available[:5]
+        hand_type = HighCard(cards_available[:5])
 
         #count the number of matching cards
         num_counts = {}
         for card in cards_available:
-            if card.num not in num_counts:
-                num_counts[card.num] = 1
+            if card.get_num() not in num_counts:
+                num_counts[card.get_num()] = 1
             else:
-                num_counts[card.num] += 1
+                num_counts[card.get_num()] += 1
 
         #check for pairs, two pairs, threes of a kind, full houses
         #FIXME
@@ -104,12 +103,12 @@ class Game:
         #check for flushes
         num_suits = {Suit.HEARTS: 0, Suit.DIAMONDS: 0, Suit.CLUBS: 0, Suit.SPADES: 0}
         for card in cards_available:
-            num_suits[card.suit] += 1
+            num_suits[card.get_suit()] += 1
         for suit in num_suits:
             if num_suits[suit] >= 5:
                 hand_type = HandType.FLUSH
                 for card in cards_available:
-                    if len(cards_available) < 5 and card.suit == suit:
+                    if len(cards_available) < 5 and card.get_suit() == suit:
                         best_hand.append(card)
 
         return best_hand, hand_type
