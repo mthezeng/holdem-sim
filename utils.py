@@ -60,9 +60,10 @@ class Game:
 
     """Static method that returns a player's best hand
     given hole cards and community cards"""
+    #TODO: move to Hand class
     def determine_hand(player):
         cards_available = player.cards + self.board
-        cards_available.sort(key=lambda card: card.get_num(), reverse = True)
+        cards_available.sort(reverse = True)
 
         #start with high card hand
         best_hand = cards_available[:5]
