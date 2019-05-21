@@ -65,6 +65,15 @@ class Card:
     def full_name(num):
         return Card.full_names[num]
 
+    def lt(num1, num2):
+        assert 1 <= num1 <= 13 and 1 <= num2 <= 13
+        if num1 == 1:
+            return False
+        if num2 == 1:
+            return True
+        else:
+            return num1 < num2
+
 class Suit(Enum):
     HEARTS = 'h'
     DIAMONDS = 'd'
@@ -101,7 +110,7 @@ class Straight(Hand):
 
     def __lt__(self, other):
         if type(self) == type(other):
-            return self.high_num < other.high_num
+            return Card.lt(self.high_num, other.high_num)
         return self.value < other.value
 
     def __gt__(self, other):
@@ -139,10 +148,12 @@ TwoKindsHand should never be instantiated
 class TwoKindsHand(Hand):
     """big is the number repeated more frequently than small in the hand"""
     def __init__(self, big, small):
-        if isinstance(self, TwoKindsHand):
-            raise NotImplementedError('TwoKindsHand is abstract')
-        if not(isinstance(big, int)) or not(isinstance(small, int)):
+        if not(isinstance(big, int) and isinstance(small, int)):
             raise TypeError('arguments must be ints')
+        if not(1 <= big <= 13 and 1 <= small <= 13):
+            raise ValueError('invalid card nums')
+        if big == small:
+            raise ValueError('invalid card nums for {0}'.type(self))
         self.big = big
         self.small = small
 
@@ -167,22 +178,16 @@ class TwoKindsHand(Hand):
 class FourOfAKind(TwoKindsHand):
     value = 8
 
-    def __init__(self, big, small):
-        super()
-
     def __str__(self):
-        return 'Four of a kind, {0}s'.format(Card.full_name(self.quad_num))
+        return 'Four of a kind, {0}s'.format(Card.full_name(self.big))
 
 class FullHouse(TwoKindsHand):
     value = 7
 
-    def __init__(self, big, small):
-        super()
-
     def __str__(self):
         return 'Full house, {0}s full of {1}s'.format(
-        Card.full_name(self.set),
-        Card.full_name(self.full)
+        Card.full_name(self.big),
+        Card.full_name(self.small)
         )
 
 class Flush(Hand):
@@ -206,7 +211,7 @@ class Flush(Hand):
         if isinstance(other, Flush):
             for i in range(len(self.cards)):
                 if self.cards[i] != other.cards[i]:
-                    return self.cards[i] < other.cards[i]
+                    return Card.lt(self.cards[i], other.cards[i])
             return False
         return self.value < other.value
 
@@ -237,6 +242,8 @@ class ThreeOfAKind(Hand):
         for c in kickers:
             if not isinstance(c, Card):
                 raise TypeError('kickers should be Cards, not {0}'.format(type(c)))
+            if c.get_num() == set_num:
+                raise ValueError('kicker cannot be same num as the set')
         self.num = set_num
         self.kickers = kickers
         self.kickers.sort()
@@ -244,10 +251,10 @@ class ThreeOfAKind(Hand):
     def __lt__(self, other):
         if isinstance(other, ThreeOfAKind):
             if self.num != other.num:
-                return self.num < other.num
+                return Card.lt(self.num, other.num)
             for i in range(len(self.kickers)):
                 if self.kickers[i] != other.kickers[i]:
-                    return self.kickers[i] < other.kickers[i]
+                    return Card.lt(self.kickers[i], other.kickers[i])
             return False
         return self.value < other.value
 
@@ -267,6 +274,41 @@ class ThreeOfAKind(Hand):
 
 class TwoPair(Hand):
     value = 3
+
+    def __init__(self, big, small, kicker):
+        if not(isinstance(big, int) and isinstance(small, int) and isinstance(kicker, int)):
+            raise TypeError('All parameters must be ints')
+        if not(1 <= big <= 13 and 1 <= small <= 13 and 1 <= kicker <= 13):
+            raise ValueError('invalid card nums')
+        if big == small or big == kicker or small == kicker:
+            raise ValueError('not a two pair')
+        self.big = big
+        self.small = small
+        self.kicker = kicker
+
+    def __lt__(self, other):
+        if isinstance(other, TwoPair):
+            if self.big != other.big:
+                return Card.lt(self.big, other.big)
+            elif self.small != other.small:
+                return Card.lt(self.small, other.small)
+            else:
+                return Card.lt(self.kicker, other.kicker)
+        return self.value < other.value
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        if isinstance(other, TwoPair):
+            return self.big == other.big and self.small == other.small and self.kicker == other.kicker
+        return self.value == other.value
+
+    def __str__(self):
+        return "Two pair, {0}s and {1}s".format(
+        Card.full_name(self.big),
+        Card.full_name(self.small)
+        )
 
 class OnePair(Hand):
     value = 2
