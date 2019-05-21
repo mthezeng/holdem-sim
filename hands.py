@@ -29,6 +29,10 @@ class Card:
         self.suit = suit
 
     def __lt__(self, other):
+        if self.get_num() == 1:
+            return False
+        elif other.get_num() == 1:
+            return True
         return self.get_num() < other.get_num()
 
     def __gt__(self, other):
@@ -172,10 +176,37 @@ class Flush(Hand):
     value = 6
 
     def __init__(self, cards):
-        if isinstance(cards, list):
+        if not isinstance(cards, list):
             raise TypeError("the list of cards must be passed in")
+        if len(cards) != 5:
+            raise ValueError("the list of cards must have five cards")
+        suit = cards[0].get_suit()
+        for c in cards:
+            if not isinstance(c, Card):
+                raise TypeError("{0} in cards is not a Card".format(c))
+            if c.get_suit() != suit:
+                raise ValueError("Not a flush: expected {0} but got {1}".format(suit, c.get_suit()))
+
         self.cards = cards
         self.cards.sort()
+
+    def __lt__(self, other):
+        for i in range(len(self.cards)):
+            if self.cards[i] != other.cards[i]:
+                return self.cards[i] < other.cards[i]
+        return False
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        return self.cards == other.cards
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return "Flush, {0} high".format(self.cards[0].get_fullname())
 
 class Straight(Hand):
     value = 5
