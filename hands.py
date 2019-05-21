@@ -293,7 +293,31 @@ class FullHouse(TwoKindsHand):
         Card.full_name(self.small)
         )
 
-class Flush(Hand):
+class NoRepeats(Hand):
+    def __init__(self, cards):
+        self.cards = cards
+        self.cards.sort(reverse = True)
+
+    def __lt__(self, other):
+        if type(self) == type(other):
+            for i in range(len(self.cards)):
+                if self.cards[i] != other.cards[i]:
+                    return Card.lt(self.cards[i], other.cards[i])
+            return False
+        return self.value < other.value
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.cards == other.cards
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+class Flush(NoRepeats):
     """
     Represents a flush in poker (five cards, all the same suit).
 
@@ -313,27 +337,7 @@ class Flush(Hand):
                 raise TypeError('{0} in cards is not a Card'.format(c))
             if c.get_suit() != suit:
                 raise ValueError('Not a flush: expected {0} but got {1}'.format(suit, c.get_suit()))
-        self.cards = cards
-        self.cards.sort(reverse = True)
-
-    def __lt__(self, other):
-        if isinstance(other, Flush):
-            for i in range(len(self.cards)):
-                if self.cards[i] != other.cards[i]:
-                    return Card.lt(self.cards[i], other.cards[i])
-            return False
-        return self.value < other.value
-
-    def __gt__(self, other):
-        return other.__lt__(self)
-
-    def __eq__(self, other):
-        if isinstance(other, Flush):
-            return self.cards == other.cards
-        return self.value == other.value
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
+        super().__init__(cards)
 
     def __str__(self):
         return 'Flush, {0} high'.format(self.cards[0].get_fullname())
@@ -455,6 +459,8 @@ class OnePair(Hand):
             raise TypeError('pair_num must be an int')
         if not isinstance(kickers, list):
             raise TypeError('kickers must be a list')
+        if len(kickers) != 3:
+            raise ValueError('kickers must have length 3')
         for c in kickers:
             if not isinstance(c, Card):
                 raise TypeError('kickers must be a list of Cards')
@@ -486,5 +492,18 @@ class OnePair(Hand):
     def __str__(self):
         return 'One pair, {0}s'.format(Card.full_name(pair_num))
 
-class HighCard(Hand):
+class HighCard(NoRepeats):
     value = 1
+
+    def __init__(self, cards):
+        if not isinstance(cards, list):
+            raise TypeError('the list of cards must be passed in')
+        if len(cards) != 5:
+            raise ValueError('the list of cards must have five cards')
+        for c in cards:
+            if not isinstance(c, Card):
+                raise TypeError('{0} in cards is not a Card'.format(c))
+        super().__init__(cards)
+
+    def __str__(self):
+        return '{0} high'.format(Card.full_name(cards[0]))
