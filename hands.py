@@ -102,17 +102,15 @@ class Straight(Hand):
     def __lt__(self, other):
         if type(self) == type(other):
             return self.high_num < other.high_num
-        return super()
+        return self.value < other.value
 
     def __gt__(self, other):
-        if type(self) == type(other):
-            return self.high_num > other.high_num
-        return super()
+        return other.__lt__(self)
 
     def __eq__(self, other):
-        if super():
+        if type(self) == type(other):
             return self.high_num == other.high_num
-        return False
+        return self.value == other.value
 
     def __ne__(self, other):
         return not self.__eq__(self, other)
@@ -153,15 +151,15 @@ class TwoKindsHand(Hand):
             if self.big == other.big:
                 return self.small < other.small
             return self.big < other.big
-        return super()
+        return self.value < other.value
 
     def __gt__(self, other):
         return other.__lt__(self)
 
     def __eq__(self, other):
-        if super():
+        if type(self) == type(other):
             return (self.big == other.big) and (self.small == other.small)
-        return False
+        return self.value == other.value
 
     def __ne__(self, other):
         return not self.__eq__(self, other)
@@ -204,15 +202,15 @@ class Flush(Hand):
                 if self.cards[i] != other.cards[i]:
                     return self.cards[i] < other.cards[i]
             return False
-        return super()
+        return self.value < other.value
 
     def __gt__(self, other):
         return other.__lt__(self)
 
     def __eq__(self, other):
-        if super():
+        if isinstance(other, Flush):
             return self.cards == other.cards
-        return False
+        return self.value == other.value
 
     def __ne__(self, other):
         return not self.__eq__(other)
