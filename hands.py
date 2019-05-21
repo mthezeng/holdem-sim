@@ -28,6 +28,18 @@ class Card:
         self.num = number
         self.suit = suit
 
+    def __lt__(self, other):
+        return self.get_num() < other.get_num()
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        return self.get_num() == other.get_num()
+
+    def __ne__(self, other):
+        return not self.__eq__(self, other)
+
     def __str__(self):
         return "{0} of {1}".format(self.full_names[self.num], self.suit.name.lower())
 
@@ -59,7 +71,7 @@ class Hand:
     value = 0 # larger values indicate stronger hands
 
     def __init__(self):
-        pass
+        raise NotImplementedError()
 
     def __lt__(self, other):
         return self.value < other.value
@@ -77,7 +89,6 @@ class StraightFlush(Hand):
     value = 9 # strongest hand in holdem poker
 
     def __init__(self, high_num):
-        super().__init__()
         if not isinstance(high_num, int):
             raise TypeError("high_num must be an int, not {0}".format(type(high_num)))
         if not(5 <= high_num <= 13) and high_num != 1:
@@ -110,10 +121,15 @@ class StraightFlush(Hand):
         Card.full_name((self.high_num - 4) % 13)
         )
 
-"""FourOfAKind and FullHouse have very similar representations"""
+"""
+FourOfAKind and FullHouse have very similar representations
+TwoKindsHand should never be instantiated
+"""
 class TwoKindsHand(Hand):
     """big is the number repeated more frequently than small in the hand"""
     def __init__(self, big, small):
+        if isinstance(self, TwoKindsHand):
+            raise NotImplementedError("TwoKindsHand is abstract")
         if not(isinstance(big, int)) or not(isinstance(small, int)):
             raise TypeError("arguments must be ints")
         self.big = big
@@ -154,6 +170,12 @@ class FullHouse(TwoKindsHand):
 
 class Flush(Hand):
     value = 6
+
+    def __init__(self, cards):
+        if isinstance(cards, list):
+            raise TypeError("the list of cards must be passed in")
+        self.cards = cards
+        self.cards.sort()
 
 class Straight(Hand):
     value = 5
