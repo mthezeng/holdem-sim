@@ -212,7 +212,7 @@ class StraightFlush(Straight):
 
 class TwoKindsHand(Hand):
     """
-    A class that represents a five-card hand that only has two kinds of cards.
+    Abstract class that represents a five-card hand that only has two kinds of cards.
 
     FourOfAKind and FullHouse have very similar representations, since both
     hands only feature two kinds of cards. This class combines both of their
@@ -294,9 +294,21 @@ class FullHouse(TwoKindsHand):
         )
 
 class NoRepeats(Hand):
+    """
+    Abstract class representing a hand with no repeating numbers, excluding straights.
+
+    This is an abstract superclass for flushes and high cards, since both hands
+    do not contain any repeating cards and therefore require a list of all five
+    cards in the hand to be passed into the constructor. Comparisons between
+    two flushes and two high cards require traversing the whole list in the
+    worst case, comparing each respective card in each hand.
+
+    Attributes:
+        cards (list): A reverse-sorted list of all five cards in the hand.
+    """
     def __init__(self, cards):
         self.cards = cards
-        self.cards.sort(reverse = True)
+        self.cards.sort(reverse=True)
 
     def __lt__(self, other):
         if type(self) == type(other):
@@ -319,10 +331,16 @@ class NoRepeats(Hand):
 
 class Flush(NoRepeats):
     """
-    Represents a flush in poker (five cards, all the same suit).
+    Represents a flush in poker.
+
+    A flush is a poker hand where all five cards have the same suit. Comparing
+    this hand with other flushes requires the same method as comparing two high
+    card hands, so both flushes and high cards inherit the same superclass
+    comparison methods in NoRepeats.
 
     Attributes:
         cards (list): A list of Card instances comprising the five-card hand.
+        value (int): The strength of the hand. Larger values mean stronger hands.
     """
     value = 6
 
@@ -352,7 +370,8 @@ class ThreeOfAKind(Hand):
 
     Attributes:
         num (int): The number repeated three times in the hand.
-        kickers (list): A sorted list of the two kickers in the hand.
+        kickers (list): A reverse-sorted list of the two kickers in the hand.
+        value (int): The strength of the hand. Larger values mean stronger hands.
     """
     value = 4
 
@@ -370,7 +389,7 @@ class ThreeOfAKind(Hand):
                 raise ValueError('kicker cannot be same num as the set')
         self.num = num
         self.kickers = kickers
-        self.kickers.sort()
+        self.kickers.sort(reverse=True)
 
     def __lt__(self, other):
         if isinstance(other, ThreeOfAKind):
@@ -408,6 +427,7 @@ class TwoPair(Hand):
         big (int): The larger of the two pairs, e.g. 1 in AAKKQ.
         small (int): The smaller of the two pairs, e.g. 13 in AAKKQ.
         kicker (int): The kicker, e.g. 12 in AAKKQ.
+        value (int): The strength of the hand. Larger values mean stronger hands.
     """
     value = 3
 
@@ -452,6 +472,18 @@ class TwoPair(Hand):
         )
 
 class OnePair(Hand):
+    """
+    Represents a one pair hand in poker.
+
+    A one pair hand contains a pair of cards with the same number, plus three
+    extra cards with different numbers called kickers. If two players have the
+    same pair, the value of their hand is compared by the value of the kickers.
+
+    Attributes:
+        pair_num (int): The number that is paired in the hand.
+        kickers (list): A reverse-sorted list of the kickers in the hand.
+        value (int): The strength of the hand. Larger values mean stronger hands.
+    """
     value = 2
 
     def __init__(self, pair_num, kickers):
@@ -468,7 +500,7 @@ class OnePair(Hand):
                 raise ValueError('kickers cannot be the same as the pair_num')
         self.pair_num = pair_num
         self.kickers = kickers
-        self.kickers.sort()
+        self.kickers.sort(reverse=True)
 
     def __lt__(self, other):
         if isinstance(other, OnePair):
@@ -493,6 +525,19 @@ class OnePair(Hand):
         return 'One pair, {0}s'.format(Card.full_name(pair_num))
 
 class HighCard(NoRepeats):
+    """
+    Represents a high card hand in poker.
+
+    When a hand contains no straights, flushes, or repeated cards, its value is
+    determined by value of the highest card in the hand. Comparing this hand
+    with other high card hands requires the same method as comparing two
+    flushes, so both flushes and high cards inherit the same superclass
+    comparison methods in NoRepeats.
+
+    Attributes:
+        cards (list): A list of Card instances comprising the five-card hand.
+        value (int): The strength of the hand. Larger values mean stronger hands.
+    """
     value = 1
 
     def __init__(self, cards):
