@@ -2,20 +2,24 @@ from numpy import random
 from hands import *
 
 class Deck:
+    """Represents an ordinary, 52-card playing deck."""
     def __init__(self):
+        """Constructor for the Deck class, just calls reset."""
         self.reset()
 
     def reset(self):
+        """Returns the deck to its original 52 card state."""
         self.cards = []
         for s in Suit:
             for i in range(1, 14):
                 self.cards.append(Card(i, s))
 
     def shuffle(self):
+        """Shuffle the deck."""
         random.shuffle(self.cards)
 
-    """Deal a player the top card from this deck"""
     def deal(self, player):
+        """Deal a player the top card from this deck."""
         player.addCard(self.cards.pop(0))
 
 class Player:
@@ -23,13 +27,18 @@ class Player:
         self.name = name
         self.cards = []
 
-    def addCard(self, card):
+    def add_card(self, card):
         self.cards.append(card)
         assert len(self.cards) < 2
 
-    def printHand(self):
-        for i in range(len(self.cards)):
-            print(self.cards(i))
+    def get_hole_cards(self):
+        return self.cards
+
+    def print_hole_cards(self):
+        print(self.cards)
+
+    def __str__(self):
+        return self.name
 
 class Game:
     def __init__(self, num_players):
@@ -58,10 +67,8 @@ class Game:
         print('RIVER:')
         self.show_next_card()
 
-    """Static method that returns a player's best hand
-    given hole cards and community cards"""
-    #TODO: move to Hand class
-    def determine_hand(player):
+    def determine_hand(self, player):
+        """Returns a player's best hand given hole cards and community cards."""
         cards_available = player.cards + self.board
         cards_available.sort(reverse = True)
 
