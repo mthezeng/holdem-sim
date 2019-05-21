@@ -188,7 +188,7 @@ class Flush(Hand):
                 raise ValueError("Not a flush: expected {0} but got {1}".format(suit, c.get_suit()))
 
         self.cards = cards
-        self.cards.sort()
+        self.cards.sort(reverse = True)
 
     def __lt__(self, other):
         for i in range(len(self.cards)):
