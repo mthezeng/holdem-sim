@@ -390,7 +390,7 @@ class ThreeOfAKind(Hand):
         return not self.__eq__(other)
 
     def __str__(self):
-        return "Three of a kind, {0}s".format(Card.full_name(self.num))
+        return 'Three of a kind, {0}s'.format(Card.full_name(self.num))
 
 class TwoPair(Hand):
     """
@@ -438,14 +438,53 @@ class TwoPair(Hand):
             return self.big == other.big and self.small == other.small and self.kicker == other.kicker
         return self.value == other.value
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
-        return "Two pair, {0}s and {1}s".format(
+        return 'Two pair, {0}s and {1}s'.format(
         Card.full_name(self.big),
         Card.full_name(self.small)
         )
 
 class OnePair(Hand):
     value = 2
+
+    def __init__(self, pair_num, kickers):
+        if not isinstance(pair_num, int):
+            raise TypeError('pair_num must be an int')
+        if not isinstance(kickers, list):
+            raise TypeError('kickers must be a list')
+        for c in kickers:
+            if not isinstance(c, Card):
+                raise TypeError('kickers must be a list of Cards')
+            if c.get_num() == pair_num:
+                raise ValueError('kickers cannot be the same as the pair_num')
+        self.pair_num = pair_num
+        self.kickers = kickers
+        self.kickers.sort()
+
+    def __lt__(self, other):
+        if isinstance(other, OnePair):
+            if other.pair_num != self.pair_num:
+                return self.pair_num < self.pair_num
+            else:
+                return self.kickers < other.kickers
+        return self.value < other.value
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        if isinstance(other, OnePair):
+            return self.pair_num == other.pair_num and self.kickers == other.kickers
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return 'One pair, {0}s'.format(Card.full_name(pair_num))
 
 class HighCard(Hand):
     value = 1
