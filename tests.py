@@ -11,5 +11,14 @@ class TestHands(unittest.TestCase):
         self.assertTrue(royal > t)
         self.assertFalse(t == royal)
 
+    def test_compare2(self):
+        straight = Straight(10)
+        f = FourOfAKind(5, 1)
+        self.assertTrue(straight < f)
+        self.assertFalse(f < straight)
+        self.assertFalse(straight > f)
+        self.assertTrue(f > straight)
+        self.assertFalse(f == straight)
+
 if __name__ == '__main__':
     unittest.main()

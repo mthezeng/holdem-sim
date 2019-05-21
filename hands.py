@@ -167,11 +167,17 @@ class TwoKindsHand(Hand):
 class FourOfAKind(TwoKindsHand):
     value = 8
 
+    def __init__(self, big, small):
+        super()
+
     def __str__(self):
         return 'Four of a kind, {0}s'.format(Card.full_name(self.quad_num))
 
 class FullHouse(TwoKindsHand):
     value = 7
+
+    def __init__(self, big, small):
+        super()
 
     def __str__(self):
         return 'Full house, {0}s full of {1}s'.format(
