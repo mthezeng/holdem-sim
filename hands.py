@@ -42,7 +42,7 @@ class Card:
         return self.get_num() == other.get_num()
 
     def __ne__(self, other):
-        return not self.__eq__(self, other)
+        return not self.__eq__(other)
 
     def __str__(self):
         return '{0} of {1}'.format(self.full_names[self.num], self.suit.name.lower())
@@ -245,15 +245,15 @@ class ThreeOfAKind(Hand):
                 if self.kickers[i] != other.kickers[i]:
                     return self.kickers[i] < other.kickers[i]
             return False
-        return super()
+        return self.value < other.value
 
     def __gt__(self, other):
         return other.__lt__(self)
 
     def __eq__(self, other):
-        if super():
+        if isinstance(other, ThreeOfAKind):
             return self.num == other.num and self.kickers == other.kickers
-        return False
+        return self.value == other.value
 
     def __ne__(self, other):
         return not self.__eq__(other)
