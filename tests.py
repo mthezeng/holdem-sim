@@ -43,6 +43,26 @@ class ComparisonTests(unittest.TestCase):
         self.assertFalse(lower == higher)
         self.assertFalse(higher == lower)
 
+    def test_compare_diff5(self):
+        higher = StraightFlush(1)
+        lower = Straight(1)
+        self.assertTrue(lower < higher)
+        self.assertFalse(higher < lower)
+        self.assertFalse(lower > higher)
+        self.assertTrue(higher > lower)
+        self.assertFalse(lower == higher)
+        self.assertFalse(higher == lower)
+
+    def test_compare_diff6(self):
+        higher = FourOfAKind(1, 13)
+        lower = FullHouse(1, 13)
+        self.assertTrue(lower < higher)
+        self.assertFalse(higher < lower)
+        self.assertFalse(lower > higher)
+        self.assertTrue(higher > lower)
+        self.assertFalse(lower == higher)
+        self.assertFalse(higher == lower)
+
     def test_compare_same1(self):
         higher = TwoPair(1, 9, 13)
         lower = TwoPair(2, 9, 13)
