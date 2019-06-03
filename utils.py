@@ -74,49 +74,55 @@ class Game:
     def determine_hand(cards_available):
         cards_available.sort(reverse = True)
 
-        #start with high card hand
+        # start with high card hand
         hand_type = HighCard(cards_available[:5])
 
-        #count the number of matching cards
+        ## collect information ##
+        # count the number of matching cards, store them in most_common
         num_counts = Counter()
         for card in cards_available:
             num_counts[card.get_num()] += 1
         most_common = num_counts.most_common()
 
-        #check for pairs, two pairs, threes of a kind, full houses
-        #FIXME
+        # count number of pairs, trips, and quads
         num_pairs = 0
-        trips = False
+        num_trips = 0
+        num_quads = 0
         for num, count in most_common:
-            if count == 3:
-                trips = True
+            if count == 4:
+                num_quads += 1
+            elif count == 3:
+                num_trips += 1
             elif count == 2:
                 num_pairs += 1
 
-        if num_pairs == 1:
-            if trips:
-                hand_type = FullHouse(most_common[0][0], most_common[1][0])
-            else:
-                kickers = [c for c in cards_available if c.get_num() != most_common[0][0]]
-                hand_type = OnePair(most_common[0][0], kickers)
-        elif num_pairs == 2:
-            hand_type = TwoPair(most_common[0][0], most_common[1][0], most_common[2][0])
-
-        #check for straights
-        consecutive_numbers = 0
-        straight_high = 0
-        for i in range(1, len(cards_available)):
-            if cards_available[i-1] - cards_available[i] == 1:
-                if not straight_high:
-                    straight_high = cards_available[i-1]
-                consecutive_numbers += 1
-        if consecutive_numbers == 5:
-            hand_type = Straight(straight_high)
-
-        #check for flushes
+        # count number of cards in each suit
         num_suits = Counter()
         for card in cards_available:
             num_suits[card.get_suit()] += 1
+
+        # check for a straight, storing straight into an array if exists
+        # AT98762
+        # FIXME: AAT5432 (check for wheel)
+        straight_cards = []
+        for i in range(len(cards_available) - 5):
+            # cur = cards_available[i]
+            # next = cards_available[i+1]
+            # next_next = cards_available[i+2]
+            # if (cur.get_num() == 1 and next.get_num() == 13) or
+            #     cur.get_num() - 1 == next.get_num():
+            #     straight_cards.append(cur)
+            #     if next.get_num() - 1 != next_next.get_num():
+            #         straight_cards.append(next)
+            # elif len(straight_cards) < 5:
+            #     straight_cards = []
+            
+
+
+        ## checks ##
+
+
+        #check for flushes
         for suit in num_suits:
             if num_suits[suit] >= 5:
                 if consecutive_numbers == 5:
