@@ -100,13 +100,25 @@ class DetermineHandTests(unittest.TestCase):
 
     def test_is_straight1(self):
         cards_available = [
+            Card(5, Suit.CLUBS),
+            Card(6, Suit.DIAMONDS),
+            Card(7, Suit.DIAMONDS),
+            Card(8, Suit.SPADES),
+            Card(9, Suit.SPADES),
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, Straight))
+
+    def test_is_straight2(self):
+        # wheel (ace-to-five) straight
+        cards_available = [
             Card(1, Suit.CLUBS),
             Card(5, Suit.DIAMONDS),
             Card(3, Suit.DIAMONDS),
             Card(4, Suit.SPADES),
             Card(2, Suit.SPADES),
         ]
-        hand = DetermineHand.is_flush(cards_available)
+        hand = DetermineHand(cards_available).identify()
         self.assertTrue(isinstance(hand, Straight))
 
 

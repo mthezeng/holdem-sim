@@ -69,6 +69,7 @@ class DetermineHand:
 			return HighCard(self.cards)
 
 	def _is_straight_flush(self):
+		# never called due to optimization
 		return self._is_straight() and self._is_flush()
 
 	def _is_quads(self):
@@ -89,8 +90,8 @@ class DetermineHand:
 		if self.cards[0].get_num() == 1 and self.cards[1].get_num() == 5:
 			# offset the consecutive check in the event of the ace-to-five straight, which is sorted as A5432
 			offset = 1
-		for i in range(4):
-			if self.cards[i+offset] != self.cards[i+1] + 1:
+		for i in range(4 - offset):
+			if self.cards[i+offset].get_num() != self.cards[i+offset+1].get_num() + 1:
 				return False
 		return True
 
