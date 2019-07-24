@@ -33,6 +33,8 @@ class DetermineHand:
 		flush = self._is_flush()
 		straight = self._is_straight()
 		if flush and straight:
+			if self.cards[0].get_num() == 1 and self.cards[1].get_num() == 5:
+				return StraightFlush(5)  # wheel (ace-to-five) straight flush
 			return StraightFlush(self.cards[0].get_num())
 
 		elif self._is_quads():
@@ -45,6 +47,8 @@ class DetermineHand:
 			return Flush(self.cards)
 
 		elif straight:
+			if self.cards[0].get_num() == 1 and self.cards[1].get_num() == 5:
+				return Straight(5)  # wheel (ace-to-five) straight
 			return Straight(self.cards[0].get_num())
 
 		elif self._is_trips():
@@ -87,8 +91,8 @@ class DetermineHand:
 
 	def _is_straight(self):
 		offset = 0
-		if self.cards[0].get_num() == 1 and self.cards[1].get_num() == 5:
-			# offset the consecutive check in the event of the ace-to-five straight, which is sorted as A5432
+		if self.cards[0].get_num() == 1 and (self.cards[1].get_num() == 5 or self.cards[1].get_num() == 13):
+			# offset check in the event of the wheel or nut straights, sorted as A5432 and AKQJT, respectively
 			offset = 1
 		for i in range(4 - offset):
 			if self.cards[i+offset].get_num() != self.cards[i+offset+1].get_num() + 1:

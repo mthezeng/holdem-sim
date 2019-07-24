@@ -98,29 +98,80 @@ class ComparisonTests(unittest.TestCase):
 
 class DetermineHandTests(unittest.TestCase):
 
-    def test_is_straight1(self):
+    def test_straight1(self):
         cards_available = [
             Card(5, Suit.CLUBS),
             Card(6, Suit.DIAMONDS),
             Card(7, Suit.DIAMONDS),
             Card(8, Suit.SPADES),
-            Card(9, Suit.SPADES),
+            Card(9, Suit.SPADES)
         ]
         hand = DetermineHand(cards_available).identify()
         self.assertTrue(isinstance(hand, Straight))
+        self.assertEqual(9, hand.high_num)
 
-    def test_is_straight2(self):
+    def test_straight2(self):
         # wheel (ace-to-five) straight
         cards_available = [
             Card(1, Suit.CLUBS),
-            Card(5, Suit.DIAMONDS),
+            Card(5, Suit.HEARTS),
             Card(3, Suit.DIAMONDS),
             Card(4, Suit.SPADES),
-            Card(2, Suit.SPADES),
+            Card(2, Suit.SPADES)
         ]
         hand = DetermineHand(cards_available).identify()
         self.assertTrue(isinstance(hand, Straight))
+        self.assertEqual(5, hand.high_num)
 
+    def test_straight3(self):
+        # nut (ten-to-ace) straight
+        cards_available = [
+            Card(1, Suit.HEARTS),
+            Card(11, Suit.SPADES),
+            Card(13, Suit.DIAMONDS),
+            Card(10, Suit.HEARTS),
+            Card(12, Suit.DIAMONDS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, Straight))
+        self.assertEqual(1, hand.high_num)
+
+    def test_flush(self):
+        cards_available = [
+            Card(1, Suit.CLUBS),
+            Card(4, Suit.CLUBS),
+            Card(7, Suit.CLUBS),
+            Card(2, Suit.CLUBS),
+            Card(11, Suit.CLUBS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, Flush))
+
+    def test_straight_flush1(self):
+        # nut (ten-to-ace) straight flush, a.k.a. royal flush
+        cards_available = [
+            Card(1, Suit.HEARTS),
+            Card(11, Suit.HEARTS),
+            Card(13, Suit.HEARTS),
+            Card(10, Suit.HEARTS),
+            Card(12, Suit.HEARTS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, StraightFlush))
+        self.assertEqual(1, hand.high_num)
+
+    def test_straight_flush2(self):
+        # wheel (ace-to-five) straight flush
+        cards_available = [
+            Card(1, Suit.DIAMONDS),
+            Card(5, Suit.DIAMONDS),
+            Card(3, Suit.DIAMONDS),
+            Card(4, Suit.DIAMONDS),
+            Card(2, Suit.DIAMONDS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, StraightFlush))
+        self.assertEqual(5, hand.high_num)
 
 if __name__ == '__main__':
     unittest.main()

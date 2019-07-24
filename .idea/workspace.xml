@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0611f359-a060-4123-aff6-ee6fcb123f02" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/determine_hand.py" beforeDir="false" afterPath="$PROJECT_DIR$/determine_hand.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hands.py" beforeDir="false" afterPath="$PROJECT_DIR$/hands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hands.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5589">
-              <caret line="394" column="13" selection-start-line="394" selection-start-column="13" selection-end-line="394" selection-end-column="13" />
+            <state relative-caret-position="324">
+              <caret line="330" lean-forward="true" selection-start-line="330" selection-end-line="330" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -26,11 +26,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/determine_hand.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="71" column="42" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="42" />
+            <state relative-caret-position="-104">
+              <caret line="42" column="35" lean-forward="true" selection-start-line="42" selection-start-column="35" selection-end-line="42" selection-end-column="35" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -41,8 +41,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
-              <caret line="120" selection-start-line="120" selection-end-line="120" />
+            <state relative-caret-position="293">
+              <caret line="173" column="26" selection-start-line="173" selection-start-column="26" selection-end-line="173" selection-end-column="26" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -70,10 +70,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/hands.py" />
         <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/tests.py" />
         <option value="$PROJECT_DIR$/determine_hand.py" />
+        <option value="$PROJECT_DIR$/hands.py" />
       </list>
     </option>
   </component>
@@ -177,28 +177,34 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_in_tests_py - 2019.07.23 at 21h 15m 05s.xml">
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 18m 59s.xml">
       <configuration name="Unittests in tests.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_tests_py - 2019.07.23 at 21h 35m 36s.xml">
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 19m 07s.xml">
       <configuration name="Unittests in tests.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 10m 45s.xml">
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 21m 35s.xml">
       <configuration name="Unittests in tests.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 11m 32s.xml">
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 25m 03s.xml">
       <configuration name="Unittests in tests.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_tests_DetermineHandTests_test_is_straight2 - 2019.07.24 at 02h 13m 08s.xml">
-      <configuration name="Unittests for tests.DetermineHandTests.test_is_straight2" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_for_tests_DetermineHandTests_test_is_straight2 - 2019.07.24 at 02h 14m 27s.xml">
-      <configuration name="Unittests for tests.DetermineHandTests.test_is_straight2" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 14m 47s.xml">
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 26m 20s.xml">
       <configuration name="Unittests in tests.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 15m 13s.xml">
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 26m 51s.xml">
+      <configuration name="Unittests in tests.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 34m 01s.xml">
+      <configuration name="Unittests in tests.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 34m 52s.xml">
+      <configuration name="Unittests in tests.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 35m 59s.xml">
+      <configuration name="Unittests in tests.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_tests_py - 2019.07.24 at 02h 36m 41s.xml">
       <configuration name="Unittests in tests.py" configurationId="tests" />
     </history-entry>
   </component>
@@ -245,16 +251,6 @@
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/hands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5589">
-          <caret line="394" column="13" selection-start-line="394" selection-start-column="13" selection-end-line="394" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="593">
@@ -265,22 +261,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/determine_hand.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-104">
+          <caret line="42" column="35" lean-forward="true" selection-start-line="42" selection-start-column="35" selection-end-line="42" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="120" selection-start-line="120" selection-end-line="120" />
+        <state relative-caret-position="293">
+          <caret line="173" column="26" selection-start-line="173" selection-start-column="26" selection-end-line="173" selection-end-column="26" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/determine_hand.py">
+    <entry file="file://$PROJECT_DIR$/hands.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="71" column="42" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="42" />
+        <state relative-caret-position="324">
+          <caret line="330" lean-forward="true" selection-start-line="330" selection-end-line="330" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#21#0" expanded="true" />
           </folding>
         </state>
       </provider>

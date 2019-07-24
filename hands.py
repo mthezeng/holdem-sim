@@ -322,10 +322,12 @@ class NoRepeats(Hand):
 
     Attributes:
         cards (list): A reverse-sorted list of all five cards in the hand.
+        high_card (Card): The card of the highest value within the hand.
     """
     def __init__(self, cards):
         self.cards = cards
         self.cards.sort(reverse=True)
+        self.high_card = self.cards[0]
 
     def __lt__(self, other):
         if type(self) == type(other):
@@ -376,7 +378,7 @@ class Flush(NoRepeats):
         super().__init__(cards)
 
     def __str__(self):
-        return 'Flush, {0} high'.format(self.cards[0].get_fullname())
+        return 'Flush, {0} high'.format(self.high_card.get_fullname())
 
 
 class ThreeOfAKind(Hand):
@@ -574,4 +576,4 @@ class HighCard(NoRepeats):
         super().__init__(cards)
 
     def __str__(self):
-        return '{0} high'.format(Card.full_name(self.cards[0]))
+        return '{0} high'.format(Card.full_name(self.high_card))
