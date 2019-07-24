@@ -1,4 +1,5 @@
 from enum import Enum
+from abc import ABC, abstractmethod
 
 
 class Card:
@@ -17,19 +18,19 @@ class Card:
     """
     card_names = {1: 'A', 13: 'K', 12: 'Q', 11: 'J', 10: 'T'}
     full_names = {
-    1: 'ace',
-    2: 'deuce',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine',
-    10: 'ten',
-    11: 'jack',
-    12: 'queen',
-    13: 'king'
+        1: 'ace',
+        2: 'deuce',
+        3: 'three',
+        4: 'four',
+        5: 'five',
+        6: 'six',
+        7: 'seven',
+        8: 'eight',
+        9: 'nine',
+        10: 'ten',
+        11: 'jack',
+        12: 'queen',
+        13: 'king'
     }
 
     def __init__(self, number, suit):
@@ -118,33 +119,38 @@ class Suit(Enum):
     SPADES = 's'
 
 
-class Hand:
+class Hand(ABC):
     """
-    Abstract base class representing five-card poker hands.
+    Abstract class representing five-card poker hands.
 
     Attributes:
         value (int): The strength of the hand. Larger values mean stronger hands.
     """
     value = 0
 
-    def __init__(self):
-        raise NotImplementedError()
-
+    @abstractmethod
     def __lt__(self, other):
         """Enables the less-than operation for comparing the value of hands."""
         return self.value < other.value
 
+    @abstractmethod
     def __gt__(self, other):
         """Enables the greater-than operation for comparing the value of hands."""
         return self.value > other.value
 
+    @abstractmethod
     def __eq__(self, other):
         """Enables the equality operation for comparing the value of hands."""
         return self.value == other.value
 
+    @abstractmethod
     def __ne__(self, other):
         """Enables the non-equality operation for comparing the value of hands."""
         return not self.__eq__(other)
+
+    @abstractmethod
+    def __str__(self):
+        pass
 
 
 class Straight(Hand):
@@ -184,12 +190,12 @@ class Straight(Hand):
         return self.value == other.value
 
     def __ne__(self, other):
-        return not self.__eq__(self, other)
+        return not self.__eq__(other)
 
     def __str__(self):
         return 'Straight, {0} to {1}'.format(
-        Card.full_name(self.high_num),
-        Card.full_name((self.high_num - 4) % 13)
+            Card.full_name(self.high_num),
+            Card.full_name((self.high_num - 4) % 13)
         )
 
 
@@ -213,8 +219,8 @@ class StraightFlush(Straight):
         if self.high_num == 1:
             return 'Royal flush'
         return 'Straight flush, {0} to {1}'.format(
-        Card.full_name(self.high_num),
-        Card.full_name((self.high_num - 4) % 13)
+            Card.full_name(self.high_num),
+            Card.full_name((self.high_num - 4) % 13)
         )
 
 
@@ -238,7 +244,7 @@ class TwoKindsHand(Hand):
         if not(1 <= big <= 13 and 1 <= small <= 13):
             raise ValueError('invalid card nums')
         if big == small:
-            raise ValueError('invalid card nums for {0}'.type(self))
+            raise ValueError('invalid card nums for {0}'.format(type(self)))
         self.big = big
         self.small = small
 
@@ -258,7 +264,7 @@ class TwoKindsHand(Hand):
         return self.value == other.value
 
     def __ne__(self, other):
-        return not self.__eq__(self, other)
+        return not self.__eq__(other)
 
 
 class FourOfAKind(TwoKindsHand):
@@ -299,8 +305,8 @@ class FullHouse(TwoKindsHand):
 
     def __str__(self):
         return 'Full house, {0}s full of {1}s'.format(
-        Card.full_name(self.big),
-        Card.full_name(self.small)
+            Card.full_name(self.big),
+            Card.full_name(self.small)
         )
 
 
@@ -481,8 +487,8 @@ class TwoPair(Hand):
 
     def __str__(self):
         return 'Two pair, {0}s and {1}s'.format(
-        Card.full_name(self.big),
-        Card.full_name(self.small)
+            Card.full_name(self.big),
+            Card.full_name(self.small)
         )
 
 
