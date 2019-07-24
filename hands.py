@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Card:
     """
     This class represents a Card object.
@@ -92,12 +93,14 @@ class Card:
         """Getter method for the full name of the current card instance."""
         return self.full_names[self.num]
 
+    @staticmethod
     def full_name(num):
-        """Static method that returns the full name given any card number."""
+        """Returns the full name given any card number."""
         return Card.full_names[num]
 
+    @staticmethod
     def lt(num1, num2):
-        """Static method that compares two numbers where aces are the highest."""
+        """Compares two numbers where aces are the highest."""
         assert 1 <= num1 <= 13 and 1 <= num2 <= 13
         if num1 == 1:
             return False
@@ -106,12 +109,14 @@ class Card:
         else:
             return num1 < num2
 
+
 class Suit(Enum):
     """Enumeration representing the four suits that cards may take."""
     HEARTS = 'h'
     DIAMONDS = 'd'
     CLUBS = 'c'
     SPADES = 's'
+
 
 class Hand:
     """
@@ -139,7 +144,8 @@ class Hand:
 
     def __ne__(self, other):
         """Enables the non-equality operation for comparing the value of hands."""
-        return not self.__eq__(self, other)
+        return not self.__eq__(other)
+
 
 class Straight(Hand):
     """
@@ -186,6 +192,7 @@ class Straight(Hand):
         Card.full_name((self.high_num - 4) % 13)
         )
 
+
 class StraightFlush(Straight):
     """
     Represents a straight flush in poker.
@@ -209,6 +216,7 @@ class StraightFlush(Straight):
         Card.full_name(self.high_num),
         Card.full_name((self.high_num - 4) % 13)
         )
+
 
 class TwoKindsHand(Hand):
     """
@@ -252,6 +260,7 @@ class TwoKindsHand(Hand):
     def __ne__(self, other):
         return not self.__eq__(self, other)
 
+
 class FourOfAKind(TwoKindsHand):
     """
     Represents a four of a kind, inheriting the methods of TwoKindsHand.
@@ -271,6 +280,7 @@ class FourOfAKind(TwoKindsHand):
 
     def __str__(self):
         return 'Four of a kind, {0}s'.format(Card.full_name(self.big))
+
 
 class FullHouse(TwoKindsHand):
     """
@@ -292,6 +302,7 @@ class FullHouse(TwoKindsHand):
         Card.full_name(self.big),
         Card.full_name(self.small)
         )
+
 
 class NoRepeats(Hand):
     """
@@ -329,6 +340,7 @@ class NoRepeats(Hand):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+
 class Flush(NoRepeats):
     """
     Represents a flush in poker.
@@ -359,6 +371,7 @@ class Flush(NoRepeats):
 
     def __str__(self):
         return 'Flush, {0} high'.format(self.cards[0].get_fullname())
+
 
 class ThreeOfAKind(Hand):
     """
@@ -414,6 +427,7 @@ class ThreeOfAKind(Hand):
 
     def __str__(self):
         return 'Three of a kind, {0}s'.format(Card.full_name(self.num))
+
 
 class TwoPair(Hand):
     """
@@ -471,6 +485,7 @@ class TwoPair(Hand):
         Card.full_name(self.small)
         )
 
+
 class OnePair(Hand):
     """
     Represents a one pair hand in poker.
@@ -522,7 +537,8 @@ class OnePair(Hand):
         return not self.__eq__(other)
 
     def __str__(self):
-        return 'One pair, {0}s'.format(Card.full_name(pair_num))
+        return 'One pair, {0}s'.format(Card.full_name(self.pair_num))
+
 
 class HighCard(NoRepeats):
     """
@@ -551,4 +567,4 @@ class HighCard(NoRepeats):
         super().__init__(cards)
 
     def __str__(self):
-        return '{0} high'.format(Card.full_name(cards[0]))
+        return '{0} high'.format(Card.full_name(self.cards[0]))
