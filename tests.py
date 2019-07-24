@@ -1,6 +1,7 @@
 import unittest
 from hands import *
-from utils import Game.determine_hand
+from determine_hand import DetermineHand
+
 
 class ComparisonTests(unittest.TestCase):
     def test_compare_diff1(self):
@@ -94,19 +95,20 @@ class ComparisonTests(unittest.TestCase):
         self.assertFalse(lower == higher)
         self.assertFalse(higher == lower)
 
+
 class DetermineHandTests(unittest.TestCase):
-    def test_straight():
+
+    def test_is_straight1(self):
         cards_available = [
-        Card(1, Suit.CLUBS),
-        Card(2, Suit.DIAMONDS),
-        Card(3, Suit.DIAMONDS),
-        Card(4, Suit.SPADES),
-        Card(5, Suit.SPADES),
-        Card(10, Suit.HEARTS),
-        Card(1, Suit.SPADES)
+            Card(1, Suit.CLUBS),
+            Card(5, Suit.DIAMONDS),
+            Card(3, Suit.DIAMONDS),
+            Card(4, Suit.SPADES),
+            Card(2, Suit.SPADES),
         ]
-        hand = determine_hand(cards_available)
+        hand = DetermineHand.is_flush(cards_available)
         self.assertTrue(isinstance(hand, Straight))
+
 
 if __name__ == '__main__':
     unittest.main()

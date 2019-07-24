@@ -389,7 +389,7 @@ class ThreeOfAKind(Hand):
 
     Attributes:
         num (int): The number repeated three times in the hand.
-        kickers (list): A reverse-sorted list of the two kickers in the hand.
+        kickers (list): A reverse-sorted list of the two kickers (Cards) in the hand.
         value (int): The strength of the hand. Larger values mean stronger hands.
     """
     value = 4
@@ -403,6 +403,7 @@ class ThreeOfAKind(Hand):
             raise ValueError('kickers should be 2 cards, not {0}'.format(len(kickers)))
         for c in kickers:
             if not isinstance(c, Card):
+                # We are using the Card class so that we get ace-high logic when sorting.
                 raise TypeError('kickers should be Cards, not {0}'.format(type(c)))
             if c.get_num() == num:
                 raise ValueError('kicker cannot be same num as the set')

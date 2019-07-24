@@ -71,6 +71,7 @@ class Game:
     # def determine_hand(self, player):
     #     """Returns a player's best hand given hole cards and community cards."""
     #     cards_available = player.cards + self.board
+    @staticmethod
     def determine_hand(cards_available):
         cards_available.sort(reverse = True)
 
