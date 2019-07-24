@@ -146,6 +146,7 @@ class DetermineHandTests(unittest.TestCase):
         ]
         hand = DetermineHand(cards_available).identify()
         self.assertTrue(isinstance(hand, Flush))
+        self.assertEqual(1, hand.high_card.get_num())
 
     def test_straight_flush1(self):
         # nut (ten-to-ace) straight flush, a.k.a. royal flush
@@ -172,6 +173,44 @@ class DetermineHandTests(unittest.TestCase):
         hand = DetermineHand(cards_available).identify()
         self.assertTrue(isinstance(hand, StraightFlush))
         self.assertEqual(5, hand.high_num)
+
+    def test_straight_flush3(self):
+        cards_available = [
+            Card(5, Suit.CLUBS),
+            Card(6, Suit.CLUBS),
+            Card(7, Suit.CLUBS),
+            Card(8, Suit.CLUBS),
+            Card(9, Suit.CLUBS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, StraightFlush))
+        self.assertEqual(9, hand.high_num)
+
+    def test_quads1(self):
+        cards_available = [
+            Card(1, Suit.CLUBS),
+            Card(1, Suit.DIAMONDS),
+            Card(1, Suit.SPADES),
+            Card(1, Suit.HEARTS),
+            Card(13, Suit.CLUBS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, FourOfAKind))
+        self.assertEqual(1, hand.big)
+        self.assertEqual(13, hand.small)
+
+    def test_quads2(self):
+        cards_available = [
+            Card(2, Suit.CLUBS),
+            Card(2, Suit.DIAMONDS),
+            Card(2, Suit.SPADES),
+            Card(2, Suit.HEARTS),
+            Card(1, Suit.CLUBS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, FourOfAKind))
+        self.assertEqual(2, hand.big)
+        self.assertEqual(1, hand.small)
 
 if __name__ == '__main__':
     unittest.main()
