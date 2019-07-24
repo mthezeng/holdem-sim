@@ -21,40 +21,43 @@ class DetermineHand:
 		self.cards = cards
 		self.cards.sort(reverse=True)
 
-	def identify(self):
 		# count the number of matching cards, store them in most_common
 		num_counts = Counter()
 		for card in self.cards:
 			num_counts[card.get_num()] += 1
-		most_common = num_counts.most_common()
+		self.most_common = num_counts.most_common()
 
-		# check for each hand type
-		if self._is_straight_flush():
+	def identify(self):
+		"""Returns what kind of five-card poker hand is represented in this instance."""
+		# store results of flush and straight so that they are not called twice
+		flush = self._is_flush()
+		straight = self._is_straight()
+		if flush and straight:
 			return StraightFlush(self.cards[0].get_num())
 
 		elif self._is_quads():
-			return FourOfAKind(most_common[0][0], most_common[1][0])
+			return FourOfAKind(self.most_common[0][0], self.most_common[1][0])
 
 		elif self._is_full_house():
-			return FullHouse(most_common[0][0], most_common[1][0])
+			return FullHouse(self.most_common[0][0], self.most_common[1][0])
 
-		elif self._is_flush():
+		elif flush:
 			return Flush(self.cards)
 
-		elif self._is_straight():
+		elif straight:
 			return Straight(self.cards[0].get_num())
 
 		elif self._is_trips():
 			kickers = []
 			for c in self.cards:
-				if c.get_num() != most_common[0]:
+				if c.get_num() != self.most_common[0]:
 					kickers.append(c)
-			return ThreeOfAKind(most_common[0], kickers)
+			return ThreeOfAKind(self.most_common[0], kickers)
 
 		elif self._is_two_pair():
 			paired_cards = []
 			kicker = -1
-			for e in most_common:
+			for e in self.most_common:
 				if e[1] == 2:
 					paired_cards.append(e[0])
 				if e[1] == 1:
@@ -66,13 +69,13 @@ class DetermineHand:
 			return HighCard(self.cards)
 
 	def _is_straight_flush(self):
-		raise NotImplementedError()
+		return self._is_straight() and self._is_flush()
 
 	def _is_quads(self):
-		raise NotImplementedError()
+		return self.most_common[0][1] == 4
 
 	def _is_full_house(self):
-		raise NotImplementedError()
+		return len(self.most_common) == 2 and self.most_common[0][1] == 3 and self.most_common[1][1] == 2
 
 	def _is_flush(self):
 		suit = self.cards[0].get_suit()
@@ -82,20 +85,23 @@ class DetermineHand:
 		return True
 
 	def _is_straight(self):
-		# FIXME: wheel straight is sorted as A5432
+		offset = 0
+		if self.cards[0].get_num() == 1 and self.cards[1].get_num() == 5:
+			# offset the consecutive check in the event of the ace-to-five straight, which is sorted as A5432
+			offset = 1
 		for i in range(4):
-			if self.cards[i] != self.cards[i+1] + 1:
+			if self.cards[i+offset] != self.cards[i+1] + 1:
 				return False
 		return True
 
 	def _is_trips(self):
-		raise NotImplementedError()
+		return len(self.most_common) == 3 and self.most_common[0][1] == 3
 
 	def _is_two_pair(self):
-		raise NotImplementedError()
+		return len(self.most_common) == 3 and self.most_common[0][1] == 2
 
 	def _is_pair(self):
-		raise NotImplementedError()
+		return len(self.most_common) == 4 and self.most_common[0][1] == 2  # second condition here is a sanity check
 
 
 # TODO: determine best five-card hand given seven cards (flop, turn, river, hole cards)
