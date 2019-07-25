@@ -30,6 +30,9 @@ class DetermineHand:
 	def identify(self):
 		"""Returns what kind of five-card poker hand is represented in this instance."""
 		# store results of flush and straight so that they are not called twice
+		# TODO: no need to check for certain kinds of hands if we know something from earlier was false
+		if not self._no_duplicates():
+			raise ValueError("Hand appears to contain multiple of the same card.")
 		flush = self._is_flush()
 		straight = self._is_straight()
 		if flush and straight:
@@ -70,6 +73,10 @@ class DetermineHand:
 			return TwoPair(max(paired_cards), min(paired_cards), kicker)
 
 		else:
+			for e in self.most_common:
+				if e[1] != 1:
+					# usually handles five-of-a-kind
+					raise ValueError("Hand does not seem to be a valid poker hand.")
 			return HighCard(self.cards)
 
 	def _is_straight_flush(self):
@@ -107,6 +114,12 @@ class DetermineHand:
 
 	def _is_pair(self):
 		return len(self.most_common) == 4 and self.most_common[0][1] == 2  # second condition here is a sanity check
+
+	def _no_duplicates(self):
+		# FIXME: Card objects are not hashable
+		return len(self.cards) != len(set(self.cards))
+
+
 
 
 # TODO: determine best five-card hand given seven cards (flop, turn, river, hole cards)

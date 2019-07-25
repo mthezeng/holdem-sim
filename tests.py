@@ -212,5 +212,55 @@ class DetermineHandTests(unittest.TestCase):
         self.assertEqual(2, hand.big)
         self.assertEqual(1, hand.small)
 
+    def test_fullhouse1(self):
+        cards_available = [
+            Card(1, Suit.CLUBS),
+            Card(1, Suit.DIAMONDS),
+            Card(1, Suit.SPADES),
+            Card(13, Suit.HEARTS),
+            Card(13, Suit.CLUBS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, FullHouse))
+        self.assertEqual(1, hand.big)
+        self.assertEqual(13, hand.small)
+
+    def test_fullhouse2(self):
+        cards_available = [
+            Card(2, Suit.CLUBS),
+            Card(2, Suit.DIAMONDS),
+            Card(2, Suit.SPADES),
+            Card(1, Suit.HEARTS),
+            Card(1, Suit.CLUBS)
+        ]
+        hand = DetermineHand(cards_available).identify()
+        self.assertTrue(isinstance(hand, FullHouse))
+        self.assertEqual(2, hand.big)
+        self.assertEqual(1, hand.small)
+
+    def test_invalidhand1(self):
+        # five of a kind and duplicated card
+        cards_available = [
+            Card(2, Suit.CLUBS),
+            Card(2, Suit.DIAMONDS),
+            Card(2, Suit.SPADES),
+            Card(2, Suit.HEARTS),
+            Card(2, Suit.CLUBS)
+        ]
+        with self.assertRaises(ValueError):
+            DetermineHand(cards_available).identify()
+
+    def test_invalidhand2(self):
+        # two of clubs is repeated twice
+        cards_available = [
+            Card(2, Suit.CLUBS),
+            Card(2, Suit.DIAMONDS),
+            Card(2, Suit.CLUBS),
+            Card(1, Suit.HEARTS),
+            Card(1, Suit.CLUBS)
+        ]
+        with self.assertRaises(ValueError):
+            DetermineHand(cards_available).identify()
+
 if __name__ == '__main__':
     unittest.main()
