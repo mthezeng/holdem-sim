@@ -1,13 +1,19 @@
+"""determine_hand.py
+
+This file contains utilities for determining the winning poker hand given lists of cards.
+"""
+
 from hands import *
 from collections import Counter
 
 
 class DetermineHand:
 	"""
-	This class contains a number of methods for identifying poker hands given the cards that comprise them.
+	This class contains a number of methods for identifying poker hands given the five cards that comprise them.
 
 	Attributes:
 		cards (list): A list of five Card instances comprising a poker hand.
+		most_common (dict): Automatically generated hash table of the number of matching cards in the hand.
 	"""
 
 	def __init__(self, cards):

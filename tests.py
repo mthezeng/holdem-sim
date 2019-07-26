@@ -1,9 +1,15 @@
+"""tests.py
+
+This file contains unit tests responsible for testing the functionality of the functions
+in hands.py, determine_hand.py, and utils.py.
+"""
 import unittest
 from hands import *
 from determine_hand import DetermineHand
 
 
 class ComparisonTests(unittest.TestCase):
+    """This class contains tests for hands.py."""
     def test_compare_diff1(self):
         higher = StraightFlush(1)
         lower = ThreeOfAKind(5, [Card(1, Suit.HEARTS), Card(10, Suit.HEARTS)])
@@ -97,6 +103,7 @@ class ComparisonTests(unittest.TestCase):
 
 
 class DetermineHandTests(unittest.TestCase):
+    """This class contains tests for determine_hand.py."""
 
     def test_straight1(self):
         cards_available = [

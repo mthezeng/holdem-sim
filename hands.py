@@ -1,3 +1,8 @@
+"""hands.py
+
+This file contains a number of structures representing objects relevant to playing cards and poker hands.
+"""
+
 from enum import Enum
 from abc import ABC, abstractmethod
 

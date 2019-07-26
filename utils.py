@@ -1,3 +1,8 @@
+"""utils.py
+
+This file contains core structures relevant to the game of Texas hold'em.
+"""
+
 from numpy import random
 from collections import Counter
 from hands import *
