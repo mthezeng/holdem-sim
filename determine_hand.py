@@ -116,10 +116,11 @@ class DetermineHand:
 		return len(self.most_common) == 4 and self.most_common[0][1] == 2  # second condition here is a sanity check
 
 	def _no_duplicates(self):
-		# FIXME: Card objects are not hashable
-		return len(self.cards) != len(set(self.cards))
-
-
+		for i in range(len(self.cards)):
+			for j in range(i + 1, len(self.cards)):
+				if self.cards[i].is_same(self.cards[j]):
+					return False
+		return True
 
 
 # TODO: determine best five-card hand given seven cards (flop, turn, river, hole cards)

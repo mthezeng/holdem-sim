@@ -82,6 +82,10 @@ class Card:
         else:
             return '{0}{1}'.format(self.num, self.suit.value)
 
+    def is_same(self, other):
+        """Returns whether the current card is the exact same card (num and suit) as another."""
+        return self.num == other.num and self.suit == other.suit
+
     def get_num(self):
         """Getter method for the number of the current card instance."""
         return self.num
