@@ -268,20 +268,36 @@ class DetermineHandTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             get_hand(cards_available)
 
-
     def test_trips1(self):
         cards_available = [
             Card(1, Suit.CLUBS),
             Card(1, Suit.HEARTS),
             Card(1, Suit.DIAMONDS),
-            Card(13, Suit.DIAMONDS),
-            Card(10, Suit.DIAMONDS)
+            Card(10, Suit.DIAMONDS),
+            Card(13, Suit.DIAMONDS)
         ]
         hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, ThreeOfAKind))
         self.assertEqual(1, hand.num)
         self.assertEqual(2, len(hand.kickers))
-        
+        self.assertEqual(13, hand.kickers[0].get_num())
+        self.assertEqual(10, hand.kickers[1].get_num())
+
+    def test_trips2(self):
+        cards_available = [
+            Card(10, Suit.CLUBS),
+            Card(10, Suit.HEARTS),
+            Card(10, Suit.DIAMONDS),
+            Card(13, Suit.DIAMONDS),
+            Card(7, Suit.DIAMONDS)
+        ]
+        hand = get_hand(cards_available)
+        self.assertTrue(isinstance(hand, ThreeOfAKind))
+        self.assertEqual(10, hand.num)
+        self.assertEqual(2, len(hand.kickers))
+        self.assertEqual(13, hand.kickers[0].get_num())
+        self.assertEqual(7, hand.kickers[1].get_num())
+
 
 if __name__ == '__main__':
     unittest.main()
