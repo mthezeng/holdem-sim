@@ -5,7 +5,7 @@ in hands.py, determine_hand.py, and game.py.
 """
 import unittest
 from hands import *
-from determine_hand import DetermineHand
+from determine_hand import get_hand
 
 
 class ComparisonTests(unittest.TestCase):
@@ -112,7 +112,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(8, Suit.SPADES),
             Card(9, Suit.SPADES)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, Straight))
         self.assertEqual(9, hand.high_num)
 
@@ -125,7 +125,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(4, Suit.SPADES),
             Card(2, Suit.SPADES)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, Straight))
         self.assertEqual(5, hand.high_num)
 
@@ -138,7 +138,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(10, Suit.HEARTS),
             Card(12, Suit.DIAMONDS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, Straight))
         self.assertEqual(1, hand.high_num)
 
@@ -150,7 +150,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(2, Suit.CLUBS),
             Card(11, Suit.CLUBS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, Flush))
         self.assertEqual(1, hand.high_card.get_num())
 
@@ -163,7 +163,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(10, Suit.HEARTS),
             Card(12, Suit.HEARTS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, StraightFlush))
         self.assertEqual(1, hand.high_num)
 
@@ -176,7 +176,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(4, Suit.DIAMONDS),
             Card(2, Suit.DIAMONDS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, StraightFlush))
         self.assertEqual(5, hand.high_num)
 
@@ -188,7 +188,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(8, Suit.CLUBS),
             Card(9, Suit.CLUBS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, StraightFlush))
         self.assertEqual(9, hand.high_num)
 
@@ -200,7 +200,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(1, Suit.HEARTS),
             Card(13, Suit.CLUBS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, FourOfAKind))
         self.assertEqual(1, hand.big)
         self.assertEqual(13, hand.small)
@@ -213,7 +213,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(2, Suit.HEARTS),
             Card(1, Suit.CLUBS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, FourOfAKind))
         self.assertEqual(2, hand.big)
         self.assertEqual(1, hand.small)
@@ -226,7 +226,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(13, Suit.HEARTS),
             Card(13, Suit.CLUBS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, FullHouse))
         self.assertEqual(1, hand.big)
         self.assertEqual(13, hand.small)
@@ -239,7 +239,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(1, Suit.HEARTS),
             Card(1, Suit.CLUBS)
         ]
-        hand = DetermineHand(cards_available).identify()
+        hand = get_hand(cards_available)
         self.assertTrue(isinstance(hand, FullHouse))
         self.assertEqual(2, hand.big)
         self.assertEqual(1, hand.small)
@@ -254,7 +254,7 @@ class DetermineHandTests(unittest.TestCase):
             Card(2, Suit.CLUBS)
         ]
         with self.assertRaises(ValueError):
-            DetermineHand(cards_available).identify()
+            get_hand(cards_available)
 
     def test_invalidhand2(self):
         # two of clubs is repeated twice
@@ -266,8 +266,22 @@ class DetermineHandTests(unittest.TestCase):
             Card(1, Suit.CLUBS)
         ]
         with self.assertRaises(ValueError):
-            DetermineHand(cards_available).identify()
+            get_hand(cards_available)
 
+
+    def test_trips1(self):
+        cards_available = [
+            Card(1, Suit.CLUBS),
+            Card(1, Suit.HEARTS),
+            Card(1, Suit.DIAMONDS),
+            Card(13, Suit.DIAMONDS),
+            Card(10, Suit.DIAMONDS)
+        ]
+        hand = get_hand(cards_available)
+        self.assertTrue(isinstance(hand, ThreeOfAKind))
+        self.assertEqual(1, hand.num)
+        self.assertEqual(2, len(hand.kickers))
+        
 
 if __name__ == '__main__':
     unittest.main()

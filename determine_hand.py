@@ -9,12 +9,12 @@ from collections import Counter
 
 class DetermineHand:
     """
-	This class contains a number of methods for identifying poker hands given the five cards that comprise them.
+    This class contains a number of methods for identifying poker hands given the five cards that comprise them.
 
-	Attributes:
-		cards (list): A list of five Card instances comprising a poker hand.
-		most_common (dict): Automatically generated hash table of the number of matching cards in the hand.
-	"""
+    Attributes:
+        cards (list): A list of five Card instances comprising a poker hand.
+        most_common (dict): Automatically generated hash table of the number of matching cards in the hand.
+    """
 
     def __init__(self, cards):
         if not isinstance(cards, list):
@@ -63,9 +63,9 @@ class DetermineHand:
         elif self._is_trips():
             kickers = []
             for c in self.cards:
-                if c.get_num() != self.most_common[0]:
+                if c.get_num() != self.most_common[0][0]:
                     kickers.append(c)
-            return ThreeOfAKind(self.most_common[0], kickers)
+            return ThreeOfAKind(self.most_common[0][0], kickers)
 
         elif self._is_two_pair():
             paired_cards = []
@@ -127,5 +127,10 @@ class DetermineHand:
                 if self.cards[i].is_same(self.cards[j]):
                     return False
         return True
+
+
+def get_hand(cards):
+    """A convenient function for returning the hand representation given five cards."""
+    return DetermineHand(cards).identify()
 
 # TODO: determine best five-card hand given seven cards (flop, turn, river, hole cards)
