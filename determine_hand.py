@@ -74,9 +74,9 @@ class DetermineHand:
                 if e[1] == 2:
                     paired_cards.append(e[0])
                 if e[1] == 1:
-                    kicker = e[1]
+                    kicker = e[0]
             assert kicker > 0
-            return TwoPair(max(paired_cards), min(paired_cards), kicker)
+            return TwoPair(paired_cards[0], paired_cards[1], kicker)
 
         else:
             for e in self.most_common:

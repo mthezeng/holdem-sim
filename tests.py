@@ -298,6 +298,34 @@ class DetermineHandTests(unittest.TestCase):
         self.assertEqual(13, hand.kickers[0].get_num())
         self.assertEqual(7, hand.kickers[1].get_num())
 
+    def test_twopair1(self):
+        cards_available = [
+            Card(10, Suit.CLUBS),
+            Card(13, Suit.HEARTS),
+            Card(7, Suit.DIAMONDS),
+            Card(13, Suit.DIAMONDS),
+            Card(7, Suit.CLUBS)
+        ]
+        hand = get_hand(cards_available)
+        self.assertTrue(isinstance(hand, TwoPair))
+        self.assertEqual(13, hand.big)
+        self.assertEqual(7, hand.small)
+        self.assertEqual(10, hand.kicker)
+
+    def test_twopair2(self):
+        cards_available = [
+            Card(1, Suit.CLUBS),
+            Card(13, Suit.HEARTS),
+            Card(7, Suit.DIAMONDS),
+            Card(1, Suit.DIAMONDS),
+            Card(7, Suit.CLUBS)
+        ]
+        hand = get_hand(cards_available)
+        self.assertTrue(isinstance(hand, TwoPair))
+        self.assertEqual(1, hand.big)
+        self.assertEqual(7, hand.small)
+        self.assertEqual(13, hand.kicker)
+
 
 if __name__ == '__main__':
     unittest.main()

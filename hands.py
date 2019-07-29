@@ -110,11 +110,11 @@ class Card:
 
     @staticmethod
     def lt(num1, num2):
-        """Compares two numbers where aces are the highest."""
+        """Compares two ints where aces are the highest."""
         assert 1 <= num1 <= 13 and 1 <= num2 <= 13
         if num1 == 1:
             return False
-        if num2 == 1:
+        elif num2 == 1:
             return True
         else:
             return num1 < num2
@@ -472,7 +472,7 @@ class TwoPair(Hand):
             raise ValueError('not a two pair')
         self.big = big
         self.small = small
-        if self.small > self.big:
+        if Card.lt(self.big, self.small):
             self.big, self.small = self.small, self.big
         self.kicker = kicker
 
