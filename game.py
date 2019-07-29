@@ -1,4 +1,4 @@
-"""utils.py
+"""game.py
 
 This file contains core structures relevant to the game of Texas hold'em.
 """
@@ -11,11 +11,12 @@ class Deck:
     """Represents an ordinary, 52-card playing deck."""
     def __init__(self):
         """Constructor for the Deck class, just calls reset."""
+        self.cards = []
         self.reset()
 
     def reset(self):
         """Returns the deck to its original 52 card state."""
-        self.cards = []
+        self.cards.clear()
         for s in Suit:
             for i in range(1, 14):
                 self.cards.append(Card(i, s))
@@ -27,6 +28,7 @@ class Deck:
     def deal(self, player):
         """Deal a player the top card from this deck."""
         player.addCard(self.cards.pop(0))
+
 
 class Player:
     def __init__(self, name):
@@ -45,6 +47,7 @@ class Player:
 
     def __str__(self):
         return self.name
+
 
 class Game:
     def __init__(self, num_players):

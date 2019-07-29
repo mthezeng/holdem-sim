@@ -1,7 +1,7 @@
 """tests.py
 
 This file contains unit tests responsible for testing the functionality of the functions
-in hands.py, determine_hand.py, and utils.py.
+in hands.py, determine_hand.py, and game.py.
 """
 import unittest
 from hands import *
@@ -39,7 +39,6 @@ class ComparisonTests(unittest.TestCase):
         self.assertTrue(higher > lower)
         self.assertFalse(lower == higher)
         self.assertFalse(higher == lower)
-
 
     def test_compare_diff4(self):
         higher = Straight(10)
@@ -268,6 +267,7 @@ class DetermineHandTests(unittest.TestCase):
         ]
         with self.assertRaises(ValueError):
             DetermineHand(cards_available).identify()
+
 
 if __name__ == '__main__':
     unittest.main()
