@@ -5,7 +5,7 @@ in hands.py, determine_hand.py, and game.py.
 """
 import unittest
 from hands import *
-from determine_hand import get_hand
+from determine_hand import get_hand, best_hand
 
 
 class ComparisonTests(unittest.TestCase):
@@ -394,6 +394,20 @@ class DetermineHandTests(unittest.TestCase):
         self.assertTrue(isinstance(hand, HighCard))
         self.assertEqual(1, hand.high_card.get_num())
         self.assertEqual(13, hand.cards[1].get_num())
+
+    def test_besthand1(self):
+        cards_available = [
+            Card(1, Suit.HEARTS),
+            Card(11, Suit.HEARTS),
+            Card(13, Suit.HEARTS),
+            Card(2, Suit.SPADES),
+            Card(10, Suit.HEARTS),
+            Card(12, Suit.HEARTS),
+            Card(5, Suit.DIAMONDS)
+        ]
+        hand = best_hand(cards_available)
+        self.assertTrue(hand, isinstance(hand, StraightFlush))
+        self.assertEqual(1, hand.high_num)
 
 
 if __name__ == '__main__':

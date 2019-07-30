@@ -342,7 +342,7 @@ class NoRepeats(Hand):
         if type(self) == type(other):
             for i in range(len(self.cards)):
                 if self.cards[i] != other.cards[i]:
-                    return Card.lt(self.cards[i], other.cards[i])
+                    return self.cards[i] < other.cards[i]
             return False
         return self.value < other.value
 
@@ -585,4 +585,4 @@ class HighCard(NoRepeats):
         super().__init__(cards)
 
     def __str__(self):
-        return '{0} high'.format(Card.full_name(self.high_card))
+        return '{0} high'.format(self.high_card.get_fullname())

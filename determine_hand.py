@@ -5,6 +5,7 @@ This file contains utilities for determining the winning poker hand given lists 
 
 from hands import *
 from collections import Counter
+from itertools import combinations
 
 
 class DetermineHand:
@@ -139,4 +140,21 @@ def get_hand(cards):
     """A convenient function for returning the hand representation given five cards."""
     return DetermineHand(cards).identify()
 
-# TODO: determine best five-card hand given seven cards (flop, turn, river, hole cards)
+
+def best_hand(cards):
+    """
+    Returns the best five-card hand given more than five cards.
+
+    Usually, seven cards will be passed into this function: two for the hole cards, three
+    for the flop, one for the turn, and one for the river. The function uses the combinations
+    function from Python's itertools module to generate all possible ways to choose
+    five cards from the list, then uses get_hand to identify what the hand is, and finally
+    uses the built-in max function to determine the best hand of all combinations.
+
+    Parameters:
+        cards (list): The list of cards from which the best hand should be identified.
+
+    Returns:
+        Hand: A subclass of Hand that corresponds to the best five-card poker hand.
+    """
+    return max([get_hand(list(c)) for c in combinations(cards, 5)])
