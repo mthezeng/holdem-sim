@@ -268,6 +268,18 @@ class DetermineHandTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             get_hand(cards_available)
 
+    def test_invalidhand3(self):
+        # wheel (ace-to-five) straight flush
+        cards_available = [
+            Card(1, Suit.DIAMONDS),
+            Card(5, Suit.DIAMONDS),
+            Card(3, Suit.DIAMONDS),
+            Card(5, Suit.DIAMONDS),
+            Card(2, Suit.DIAMONDS)
+        ]
+        with self.assertRaises(ValueError):
+            get_hand(cards_available)
+
     def test_trips1(self):
         cards_available = [
             Card(1, Suit.CLUBS),
@@ -325,6 +337,18 @@ class DetermineHandTests(unittest.TestCase):
         self.assertEqual(1, hand.big)
         self.assertEqual(7, hand.small)
         self.assertEqual(13, hand.kicker)
+
+    def test_onepair1(self):
+        cards_available = [
+            Card(1, Suit.CLUBS),
+            Card(13, Suit.HEARTS),
+            Card(10, Suit.DIAMONDS),
+            Card(1, Suit.DIAMONDS),
+            Card(7, Suit.CLUBS)
+        ]
+        hand = get_hand(cards_available)
+        self.assertTrue(isinstance(hand, OnePair))
+        self.assertEqual(1, hand.pair_num)
 
 
 if __name__ == '__main__':

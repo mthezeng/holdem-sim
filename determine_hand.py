@@ -78,6 +78,12 @@ class DetermineHand:
             assert kicker > 0
             return TwoPair(paired_cards[0], paired_cards[1], kicker)
 
+        elif self._is_pair():
+            paired_cards = [e[0] for e in self.most_common if e[1] == 2]
+            paired_card = paired_cards[0]
+            kickers = [card for card in self.cards if card.get_num() != paired_card]
+            return OnePair(paired_card, kickers)
+
         else:
             for e in self.most_common:
                 if e[1] != 1:
