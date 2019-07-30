@@ -260,8 +260,8 @@ class TwoKindsHand(Hand):
     def __lt__(self, other):
         if type(self) == type(other):
             if self.big == other.big:
-                return self.small < other.small
-            return self.big < other.big
+                return Card.lt(self.small, other.small)
+            return Card.lt(self.big, other.big)
         return self.value < other.value
 
     def __gt__(self, other):
@@ -538,7 +538,7 @@ class OnePair(Hand):
     def __lt__(self, other):
         if isinstance(other, OnePair):
             if other.pair_num != self.pair_num:
-                return self.pair_num < self.pair_num
+                return Card.lt(self.pair_num, other.pair_num)
             else:
                 return self.kickers < other.kickers
         return self.value < other.value

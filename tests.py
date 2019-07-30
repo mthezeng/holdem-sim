@@ -70,6 +70,26 @@ class ComparisonTests(unittest.TestCase):
         self.assertFalse(lower == higher)
         self.assertFalse(higher == lower)
 
+    def test_compare_diff7(self):
+        higher = FourOfAKind(1, 13)
+        lower = FourOfAKind(13, 1)
+        self.assertTrue(lower < higher)
+        self.assertFalse(higher < lower)
+        self.assertFalse(lower > higher)
+        self.assertTrue(higher > lower)
+        self.assertFalse(lower == higher)
+        self.assertFalse(higher == lower)
+
+    def test_compare_diff8(self):
+        higher = OnePair(1, [Card(5, Suit.CLUBS), Card(7, Suit.CLUBS), Card(10, Suit.CLUBS)])
+        lower = OnePair(13, [Card(5, Suit.CLUBS), Card(7, Suit.CLUBS), Card(10, Suit.CLUBS)])
+        self.assertTrue(lower < higher)
+        self.assertFalse(higher < lower)
+        self.assertFalse(lower > higher)
+        self.assertTrue(higher > lower)
+        self.assertFalse(lower == higher)
+        self.assertFalse(higher == lower)
+
     def test_compare_same1(self):
         higher = TwoPair(1, 9, 13)
         lower = TwoPair(2, 9, 13)
