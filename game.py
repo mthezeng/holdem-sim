@@ -26,7 +26,7 @@ class Deck:
 
     def deal(self, player):
         """Deal a player the top card from this deck."""
-        player.addCard(self.cards.pop(0))
+        player.add_card(self.cards.pop(0))
 
     def burn_card(self):
         """Discard the top card of the deck."""
@@ -45,7 +45,7 @@ class Player:
 
     def add_card(self, card):
         self.cards.append(card)
-        assert len(self.cards) < 2
+        assert len(self.cards) <= 2
 
     def get_hole_cards(self):
         return self.cards
@@ -73,7 +73,6 @@ class Game:
         self.button = self.determine_button(self.players)
 
     def start_game(self):
-        print("Texas hold'em simulator by Michael Zeng")
         self.deal_hole_cards()
 
     def determine_button(self, players):
@@ -108,6 +107,7 @@ class Game:
         # FIXME: start from left of button
         for _ in range(2):
             for p in self.players:
+                print("Card dealt to {0}.".format(p))
                 self.deck.deal(p)
 
     # def round_of_betting(self):
