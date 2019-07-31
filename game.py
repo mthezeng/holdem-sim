@@ -136,3 +136,13 @@ class Game:
         self.deck.burn_card()
         print('RIVER:')
         self.show_next_card()
+
+    def get_players(self):
+        return self.players
+
+
+class Hero:
+    """A view of the Game class that focuses on one player's hole cards."""
+    def __init__(self, game, player):
+        self.game = game
+
