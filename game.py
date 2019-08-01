@@ -42,6 +42,7 @@ class Player:
         self.name = name
         self.seat = seat_num
         self.cards = []
+        self.sitting_out = False
 
     def add_card(self, card):
         self.cards.append(card)
@@ -59,18 +60,38 @@ class Player:
     def get_name(self):
         return self.name
 
+    def sit_out(self):
+        self.sitting_out = True
+
+    def come_back(self):
+        self.sitting_out = False
+
     def __str__(self):
         return self.name
 
 
 class Game:
     def __init__(self, num_players):
+        self.num_players = num_players
         self.players = [Player(input("Seat {0} name: ".format(i)), i) for i in range(1, num_players + 1)]
         self.board = []
         self.deck = Deck()
         self.deck.shuffle()
         self.actions = []
         self.button = self.determine_button(self.players)
+        # TODO: self.players_in_hand
+
+    def get_player_at_seat(self, seat_num):
+        """Returns Player at the specified seat number."""
+        return self.players[seat_num - 1]
+
+    def take_turns(self):
+        """Generator which starts from the small blind and rotates clockwise."""
+        button_seat = self.button.get_seat_num()
+        cur_seat = (button_seat + 1) % self.num_players
+        while True:
+            yield self.get_player_at_seat(cur_seat)
+            cur_seat = (cur_seat + 1) % self.num_players
 
     def start_game(self):
         self.deal_hole_cards()
@@ -104,11 +125,12 @@ class Game:
             return players_with_max[0]
 
     def deal_hole_cards(self):
-        # FIXME: start from left of button
-        for _ in range(2):
-            for p in self.players:
-                print("Card dealt to {0}.".format(p))
-                self.deck.deal(p)
+        turn_gen = self.take_turns()
+        cur_player = next(turn_gen)
+        while len(cur_player.get_hole_cards()) < 2:
+            print("Card dealt to {0}.".format(cur_player))
+            self.deck.deal(cur_player)
+            cur_player = next(turn_gen)
 
     # def round_of_betting(self):
     #     # TODO: get bet sizing from all players
