@@ -5,6 +5,8 @@ This file contains core structures relevant to the game of Texas hold'em.
 
 from numpy import random
 from hands import *
+from determine_hand import best_hand
+from copy import copy
 
 class Deck:
     """Represents an ordinary, 52-card playing deck."""
@@ -45,6 +47,7 @@ class Player:
         self.stack = 0
         self.sitting_out = False
         self.comments = ""
+        self.hand = None
 
     def add_card(self, card):
         self.cards.append(card)
@@ -78,6 +81,12 @@ class Player:
     def set_stack(self, amount):
         self.stack = amount
 
+    def get_hand(self):
+        return self.hand
+
+    def set_hand(self, hand):
+        self.hand = hand
+
     def sit_out(self):
         self.sitting_out = True
 
@@ -89,18 +98,16 @@ class Player:
 
 
 class Game:
-    def __init__(self, num_players, small_blind, big_blind):
+    def __init__(self, num_players, show_cards=True):
         self.num_players = num_players
-        self.small_blind = small_blind
-        self.big_blind = big_blind
+        self.show_cards = show_cards
         self.players = [Player(input("Seat {0} name: ".format(i)), i) for i in range(1, num_players + 1)]
         self.board = []
         self.deck = Deck()
         self.deck.shuffle()
         self.actions = []
         self.button = self.determine_button(self.players)
-        self.pot = 0.0
-        # TODO: self.players_in_hand
+        self.players_in_hand = copy(self.players)
 
     def get_player_at_seat(self, seat_num):
         """Returns Player at the specified seat number."""
@@ -108,22 +115,30 @@ class Game:
 
     def take_turns(self):
         """Generator which starts from the small blind and rotates clockwise."""
-        button_seat = self.button.get_seat_num()
-        cur_seat = (button_seat + 1) % self.num_players
+        i = 0
+        while i < len(self.players_in_hand):
+            if self.players_in_hand[i] is self.button:
+                i += 1
+                break
+            i += 1
         while True:
-            # print(cur_seat)
-            yield self.get_player_at_seat(cur_seat)
-            cur_seat = (cur_seat + 1) % self.num_players
+            try:
+                yield self.players_in_hand[i]
+                i += 1
+            except IndexError:
+                i = 0
 
-    def show_game_state(self, show_cards=True):
+    def show_game_state(self):
         print('-----\nCurrent game state:')
-        print('Pot: ${0}'.format(self.pot))
+        # print('Pot: ${0}'.format(self.pot))
+        if self.board:
+            print('Board: {0}'.format(self.board))
         for p in self.players:
             if p is self.button:
                 button = "[BTN] "
             else:
                 button = ""
-            if show_cards:
+            if self.show_cards:
                 hole_cards = p.get_hole_cards()
             else:
                 hole_cards = ""
@@ -131,12 +146,18 @@ class Game:
                 p.get_seat_num(), p.get_name(), button, hole_cards, p.get_comments()))
 
     def start_game(self):
-        for p in self.players:
-            p.set_stack(100 * self.big_blind)
+        # for p in self.players:
+        #     p.set_stack(100 * self.big_blind)
+        self.play_hand()
+
+    def play_hand(self):
         self.deal_hole_cards()
-        self.show_game_state()
-        self.post_blinds()
-        self.show_game_state()
+        # self.post_blinds()
+        self.show_flop()
+        self.show_turn()
+        self.show_river()
+        self.showdown()
+
 
     def determine_button(self, players):
         """Deals every player one card face-up. Highest value card determines button."""
@@ -171,26 +192,88 @@ class Game:
         self.button = self.get_player_at_seat((self.button.get_seat_num() + 1) % self.num_players)
 
     def deal_hole_cards(self):
+        print('-----\nNow dealing hole cards:')
         turn_gen = self.take_turns()
         cur_player = next(turn_gen)
         while len(cur_player.get_hole_cards()) < 2:
-            print("Card dealt to {0}.".format(cur_player))
             self.deck.deal(cur_player)
+            if self.show_cards:
+                card = ' ' + str(cur_player.get_hole_cards()[-1])
+            else:
+                card = ''
+            print("Card{0} dealt to {1}.".format(card, cur_player))
             cur_player = next(turn_gen)
+        self.show_game_state()
+
+    def show_next_card(self):
+        """Procedure called by show_flop, show_turn, and show_river that exposes one card from deck."""
+        card = self.deck.get_top_card()
+        self.board.append(card)
+        print(card)
+
+    def show_flop(self):
+        self.deck.burn_card()
+        print('-----\nFLOP:')
+        for _ in range(3):
+            self.show_next_card()
+        self.show_game_state()
+
+    def show_turn(self):
+        self.deck.burn_card()
+        print('-----\nTURN:', end='')
+        self.show_next_card()
+        self.show_game_state()
+
+    def show_river(self):
+        self.deck.burn_card()
+        print('-----\nRIVER:', end='')
+        self.show_next_card()
+        self.show_game_state()
+
+    def showdown(self):
+        # TODO: split pot
+        for p in self.players_in_hand:
+            p.set_hand(best_hand(p.get_hole_cards() + self.board))
+        max_so_far = self.players_in_hand[0].get_hand()
+        winner = self.players_in_hand[0]
+        for p in self.players_in_hand:
+            if p.get_hand() > max_so_far:
+                max_so_far = p.get_hand()
+                winner = p
+        print('-----\n{0} wins with {1}'.format(winner, max_so_far))
+
+    def get_players(self):
+        return self.players
+
+
+class GameWithBetting(Game):
+    def __init__(self, num_players, small_blind, big_blind, show_cards=True):
+        super().__init__(num_players, show_cards)
+        self.small_blind = small_blind
+        self.big_blind = big_blind
+        self.pot = 0.0
 
     def post_blinds(self):
         turns = self.take_turns()
         small = next(turns)
+        big = next(turns)
+        if self.num_players == 2:
+            small, big = big, small
         self.bet(small, self.small_blind)
         small.set_comments("posts SB: {0}".format(self.small_blind))
-        big = next(turns)
         self.bet(big, self.big_blind)
         big.set_comments("posts BB: {0}".format(self.big_blind))
+        self.show_game_state()
 
-    def round_of_betting(self):
+    def round_of_betting(self, blinds=False):
         # TODO: get bet sizing from all players
-        bet_prior = False
-        for p in self.take_turns():
+        bet_prior = blinds
+        turns = self.take_turns()
+        if blinds:
+            next(turns)
+            next(turns)
+        for p in turns:
+            print('Seat {0} ({1}) to act. '.format(p.get_seat_num(), p.get_name()), end='')
             if bet_prior:
                 action = input("Fold/Call/Raise?: ")
             else:
@@ -205,31 +288,6 @@ class Game:
         player.change_stack(-amount)
         self.pot += amount
 
-    def show_next_card(self):
-        """Procedure called by show_flop, show_turn, and show_river that exposes one card from deck."""
-        card = self.deck.pop(0)
-        self.board.append(card)
-        print(card)
-
-    def show_flop(self):
-        self.deck.burn_card()
-        for _ in range(3):
-            print('FLOP:')
-            self.show_next_card()
-
-    def show_turn(self):
-        self.deck.burn_card()
-        print('TURN:')
-        self.show_next_card()
-
-    def show_river(self):
-        self.deck.burn_card()
-        print('RIVER:')
-        self.show_next_card()
-
-    def get_players(self):
-        return self.players
-
 
 class Hero:
 
@@ -237,5 +295,4 @@ class Hero:
     def __init__(self, game, player):
         self.game = game
         self.player = player
-
 
