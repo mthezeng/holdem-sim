@@ -5,7 +5,9 @@ def main():
     print("Originally developed by Michael Zeng")
     print("-----")
     num_players = int(input("How many players?: "))
-    g = game.Game(num_players)
+    small_blind = float(input("Small blind?: "))
+    big_blind = float(input("Big blind?: "))
+    g = game.Game(num_players, small_blind, big_blind)
     g.start_game()
 
 if __name__ == '__main__':
