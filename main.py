@@ -1,5 +1,6 @@
 import game
 
+
 def main():
     print("Texas hold'em simulator")
     print("Originally developed by Michael Zeng")
@@ -10,6 +11,7 @@ def main():
     # g = game.GameWithBetting(num_players, small_blind, big_blind)
     g = game.Game(num_players)
     g.start_game()
+
 
 if __name__ == '__main__':
     main()
