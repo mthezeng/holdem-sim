@@ -8,6 +8,7 @@ from hands import *
 from determine_hand import best_hand
 from copy import copy
 
+
 class Deck:
     """Represents an ordinary, 52-card playing deck."""
     def __init__(self):
@@ -105,6 +106,18 @@ class Player:
 
 
 class Game:
+    """
+    Represents a game of Texas hold'em.
+
+    In this class, when start_game() is called, all players are dealt their hole cards,
+    and they are all assumed to be ALL IN, meaning all hands will proceed all the way
+    to showdown without any betting. The purpose of having this as the base Game
+    structure is to enable analysis of all in equities.
+
+    Attributes:
+        num_players (int): How many players are sitting in the game.
+        show_cards (bool): Whether the game state printout should show everyone's hole cards.
+    """
     def __init__(self, num_players, show_cards=True):
         self.num_players = num_players
         self.show_cards = show_cards
@@ -254,6 +267,19 @@ class Game:
 
 
 class GameWithBetting(Game):
+    """
+    Subclass of Game that allows players to bet interactively.
+
+    This subclass introduces features to the Game class that pauses the gameplay to ask
+    players for their desired actions when it becomes their turn to act and they still
+    have chips in their stack.
+
+    Attributes:
+        num_players (int): The number of players sitting at this table.
+        small_blind (float): The size of the small blind.
+        big_blind (float): The size of the big blind.
+        show_cards (bool): Whether hole cards should be revealed in the game state printout.
+    """
     def __init__(self, num_players, small_blind, big_blind, show_cards=True):
         super().__init__(num_players, show_cards)
         self.small_blind = small_blind
