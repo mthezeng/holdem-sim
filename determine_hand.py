@@ -136,7 +136,7 @@ class DetermineHand:
         return True
 
 
-def get_hand(cards):
+def identify_hand(cards):
     """A convenient function for returning the hand representation given five cards."""
     return DetermineHand(cards).identify()
 
@@ -157,4 +157,4 @@ def best_hand(cards):
     Returns:
         Hand: A subclass of Hand that corresponds to the best five-card poker hand.
     """
-    return max([get_hand(list(c)) for c in combinations(cards, 5)])
+    return max([identify_hand(list(c)) for c in combinations(cards, 5)])
