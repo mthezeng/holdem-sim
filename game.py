@@ -137,7 +137,8 @@ class Game:
     def take_turns(self):
         """Generator which starts from the small blind and rotates clockwise."""
         i = 0
-        while i < len(self.players_in_hand):
+        cached_size = len(self.players_in_hand)
+        while i < cached_size:
             if self.players_in_hand[i] is self.button:
                 i += 1
                 break
@@ -145,7 +146,11 @@ class Game:
         while True:
             try:
                 yield self.players_in_hand[i]
-                i += 1
+                if len(self.players_in_hand) != cached_size:
+                    # if player has folded, don't advance index
+                    cached_size = len(self.players_in_hand)
+                else:
+                    i += 1
             except IndexError:
                 i = 0
 
@@ -154,7 +159,7 @@ class Game:
         print('Current pot: ${0}'.format(self.pot))
         if self.board:
             print('Board: {0}'.format(self.board))
-        for p in self.players:
+        for p in self.players_in_hand:
             if p is self.button:
                 button = "[BTN] "
             else:
@@ -252,6 +257,7 @@ class Game:
 
     def showdown(self):
         # TODO: split pot
+        """Sets self.winner to the winner of the previous hand."""
         for p in self.players_in_hand:
             p.set_hand(best_hand(p.get_hole_cards() + self.board))
         max_so_far = self.players_in_hand[0].get_hand()
@@ -260,7 +266,11 @@ class Game:
             if p.get_hand() > max_so_far:
                 max_so_far = p.get_hand()
                 winner = p
-        print('-----\n{0} wins with {1}'.format(winner, max_so_far))
+        if self.pot == 0.0:
+            pot_str = ''
+        else:
+            pot_str = ' (' + str(self.pot) + ')'
+        print('-----\n{0} wins{1} with {2}'.format(winner, pot_str, max_so_far))
 
     def get_players(self):
         return self.players
@@ -306,28 +316,44 @@ class GameWithBetting(Game):
             next(turns)
 
         for p in turns:
-            if len(self.players_in_hand) == 1 or p.get_bet() == self.previous_bet:
+            if len(self.players_in_hand) == 1 or (self.previous_bet > 0 and p.get_bet() == self.previous_bet):
                 break
             self.get_action(p)
 
+        self.clear_actions()
+
     def get_action(self, player):
-        print('Seat {0} ({1}) to act. '.format(player.get_seat_num(), player.get_name()), end='')
-        if self.previous_bet != 0.0:
-            action = input("Fold/Call ${0}/Raise?: ".format(self.previous_bet))
-        else:
-            action = input("Fold/Check/Bet?: ")
-        action = action.lower()
-        if action == "bet" or action == "raise":
-            bet_size = float(input("What is {0}'s {1}?: ".format(player.get_name(), action)))
-            self.bet(player, bet_size)
-            player.set_comments("{0}s: ${1}".format(action, bet_size))
-        elif action == "call":
-            self.bet(player, self.previous_bet)
-            player.set_comments("calls: ${0}".format(self.previous_bet))
-        elif action == "fold":
-            self.players_in_hand.remove(player)
-            player.set_comments("folds")
+        while True:
+            print('Seat {0} ({1}) to act. '.format(player.get_seat_num(), player.get_name()), end='')
+            if self.previous_bet != 0.0:
+                action = input("Fold/Call ${0}/Raise?: ".format(self.previous_bet))
+            else:
+                action = input("Fold/Check/Bet?: ")
+                action = action.lower()
+            if action == "bet" or action == "raise":
+                bet_size = float(input("What is {0}'s {1}?: ".format(player.get_name(), action)))
+                self.bet(player, bet_size)
+                player.set_comments("{0}s: ${1}".format(action, bet_size))
+            elif action == "call":
+                self.bet(player, self.previous_bet)
+                player.set_comments("calls: ${0}".format(self.previous_bet))
+            elif action == "check":
+                player.set_comments("checks")
+                # FIXME: does not finish round correctly
+            elif action == "fold":
+                self.players_in_hand.remove(player)
+                player.set_comments("folds")
+            else:
+                print('Invalid input detected.')
+                continue
+            break
         self.show_game_state()
+
+    def clear_actions(self):
+        self.previous_bet = 0.0
+        for p in self.players:
+            p.set_bet(0.0)
+            p.set_comments("")
 
     def bet(self, player, amount):
         player.change_stack(-amount)
@@ -376,7 +402,7 @@ class GameWithBetting(Game):
     def no_showdown(self):
         assert len(self.players_in_hand) == 1
         winner = self.players_in_hand[0]
-        print('-----\n{0} wins {0}.'.format(winner, self.pot))
+        print('-----\n{0} wins {1}.'.format(winner, self.pot))
 
 
 class Hero:
