@@ -10,7 +10,7 @@ from itertools import combinations
 
 class DetermineHand:
     """
-    This class contains a number of methods for identifying poker hands given the five cards that comprise them.
+    This class contains methods for identifying poker hands given the five cards that comprise them.
 
     Attributes:
         cards (list): A list of five Card instances comprising a poker hand.
