@@ -312,11 +312,14 @@ class GameWithBetting(Game):
         # TODO: get bet sizing from all players
         turns = self.take_turns()
         if blinds:
-            next(turns)
-            next(turns)
+            next(turns)  # small blind
+            next(turns)  # big blind
+
+        first_to_act = next(turns)
+        self.get_action(first_to_act)
 
         for p in turns:
-            if len(self.players_in_hand) == 1 or (self.previous_bet > 0 and p.get_bet() == self.previous_bet):
+            if p is first_to_act or len(self.players_in_hand) == 1 or (0 < self.previous_bet == p.get_bet()):
                 break
             self.get_action(p)
 
@@ -403,11 +406,3 @@ class GameWithBetting(Game):
         assert len(self.players_in_hand) == 1
         winner = self.players_in_hand[0]
         print('-----\n{0} wins {1}.'.format(winner, self.pot))
-
-
-class Hero:
-    """A view of the Game class that focuses on one player's hole cards."""
-    def __init__(self, game, player):
-        self.game = game
-        self.player = player
-

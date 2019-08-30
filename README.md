@@ -20,13 +20,14 @@ Clone this repository, then run:
 * **determine_hand.py:** This file contains utilities for determining the winning poker hand given lists of cards.
 	* Contains the logic for determining what kind of poker hand we have given the cards.
 * **game.py:** This file contains core structures relevant to the game of Texas hold'em.
-	* Contains data structures that represent a deck of cards, a game of poker, etc.
+	* Contains classes that represent a deck of cards, a game of poker, etc.
 * **hands.py:** This file contains a number of structures representing objects relevant to playing cards and poker hands.
-	* Contains data structures that represent a playing card, a suit, and the kinds of poker hands like straights, flushes, and full houses.
+	* Contains classes that represent a playing card, a suit, and the kinds of poker hands like straights, flushes, and full houses.
 
 ## Known issues
 
 * There is currently no data validation on betting. A player could bet more than their entire stack, or even a negative amount (increasing their stack!).
-* Checking around does not close the action during a round of betting
 * Float arithmetic sometimes produces numbers that need to be formatted (e.g. $10.530000000000001)
 * Six is not pluralized correctly in hands.py (e.g. ""Two pair, fives full of sixs"")
+* Currently, only one hand at a time is supported.
+* No logic exists to allow players to move ALL IN properly.
