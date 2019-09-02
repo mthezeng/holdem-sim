@@ -109,16 +109,17 @@ class Game:
     """
     Represents a game of Texas hold'em.
 
-    In this class, when start_game() is called, all players are dealt their hole cards,
-    and they are all assumed to be ALL IN, meaning all hands will proceed all the way
-    to showdown without any betting. The purpose of having this as the base Game
-    structure is to enable analysis of all in equities.
+    In this class, when start_game() is called, all players are dealt their hole cards.
+    The gameplay will pause to ask players for their desired actions when it becomes their
+    turn to act and they still have chips in their stack.
 
     Attributes:
-        num_players (int): How many players are sitting in the game.
-        show_cards (bool): Whether the game state printout should show everyone's hole cards.
+        num_players (int): The number of players sitting at this table.
+        small_blind (float): The size of the small blind.
+        big_blind (float): The size of the big blind.
+        show_cards (bool): Whether hole cards should be revealed in the game state printout.
     """
-    def __init__(self, num_players, show_cards=True):
+    def __init__(self, num_players, small_blind, big_blind, show_cards=True):
         self.num_players = num_players
         self.show_cards = show_cards
         self.players = [Player(input("Seat {0} name: ".format(i)), i) for i in range(1, num_players + 1)]
@@ -129,6 +130,9 @@ class Game:
         self.button = self.determine_button(self.players)
         self.players_in_hand = copy(self.players)
         self.pot = 0.0
+        self.small_blind = small_blind
+        self.big_blind = big_blind
+        self.previous_bet = 0.0
 
     def get_player_at_seat(self, seat_num):
         """Returns Player at the specified seat number."""
@@ -177,11 +181,36 @@ class Game:
         self.play_hand()
 
     def play_hand(self):
+        # PRE-FLOP
         self.deal_hole_cards()
-        # self.post_blinds()
+        self.post_blinds()
+        self.round_of_betting(blinds=True)
+
+        # FLOP
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
         self.show_flop()
+        self.round_of_betting()
+
+        # TURN
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
         self.show_turn()
+        self.round_of_betting()
+
+        # RIVER
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
         self.show_river()
+        self.round_of_betting()
+
+        # SHOWDOWN
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
         self.showdown()
 
     def determine_button(self, players):
@@ -275,27 +304,6 @@ class Game:
     def get_players(self):
         return self.players
 
-
-class GameWithBetting(Game):
-    """
-    Subclass of Game that allows players to bet interactively.
-
-    This subclass introduces features to the Game class that pauses the gameplay to ask
-    players for their desired actions when it becomes their turn to act and they still
-    have chips in their stack.
-
-    Attributes:
-        num_players (int): The number of players sitting at this table.
-        small_blind (float): The size of the small blind.
-        big_blind (float): The size of the big blind.
-        show_cards (bool): Whether hole cards should be revealed in the game state printout.
-    """
-    def __init__(self, num_players, small_blind, big_blind, show_cards=True):
-        super().__init__(num_players, show_cards)
-        self.small_blind = small_blind
-        self.big_blind = big_blind
-        self.previous_bet = 0.0
-
     def post_blinds(self):
         turns = self.take_turns()
         small = next(turns)
@@ -309,7 +317,6 @@ class GameWithBetting(Game):
         self.show_game_state()
 
     def round_of_betting(self, blinds=False):
-        # TODO: get bet sizing from all players
         turns = self.take_turns()
         if blinds:
             next(turns)  # small blind
@@ -319,7 +326,8 @@ class GameWithBetting(Game):
         self.get_action(first_to_act)
 
         for p in turns:
-            if p is first_to_act or len(self.players_in_hand) == 1 or (0 < self.previous_bet == p.get_bet()):
+            if (p is first_to_act and self.previous_bet == 0) or \
+                    len(self.players_in_hand) == 1 or (0 < self.previous_bet == p.get_bet()):
                 break
             self.get_action(p)
 
@@ -342,7 +350,6 @@ class GameWithBetting(Game):
                 player.set_comments("calls: ${0}".format(self.previous_bet))
             elif action == "check":
                 player.set_comments("checks")
-                # FIXME: does not finish round correctly
             elif action == "fold":
                 self.players_in_hand.remove(player)
                 player.set_comments("folds")
@@ -363,39 +370,6 @@ class GameWithBetting(Game):
         player.set_bet(amount)
         self.pot += amount
         self.previous_bet = amount
-
-    def play_hand(self):
-        # PRE-FLOP
-        self.deal_hole_cards()
-        self.post_blinds()
-        self.round_of_betting(blinds=True)
-
-        # FLOP
-        if len(self.players_in_hand) == 1:
-            self.no_showdown()
-            return
-        self.show_flop()
-        self.round_of_betting()
-
-        # TURN
-        if len(self.players_in_hand) == 1:
-            self.no_showdown()
-            return
-        self.show_turn()
-        self.round_of_betting()
-
-        # RIVER
-        if len(self.players_in_hand) == 1:
-            self.no_showdown()
-            return
-        self.show_river()
-        self.round_of_betting()
-
-        # SHOWDOWN
-        if len(self.players_in_hand) == 1:
-            self.no_showdown()
-            return
-        self.showdown()
 
     def is_big_blind(self, player):
         if self.button() + 2 < self.num_players:

@@ -13,8 +13,7 @@ def main():
             break
         except ValueError:
             print('Invalid input detected.')
-    g = game.GameWithBetting(num_players, small_blind, big_blind)
-    # g = game.Game(num_players)
+    g = game.Game(num_players, small_blind, big_blind)
     g.start_game()
 
 

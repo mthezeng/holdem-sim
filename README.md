@@ -31,3 +31,4 @@ Clone this repository, then run:
 * Six is not pluralized correctly in hands.py (e.g. ""Two pair, fives full of sixs"")
 * Currently, only one hand at a time is supported.
 * No logic exists to allow players to move ALL IN properly.
+	* In the same vein, no logic exists to calculate side pots.
