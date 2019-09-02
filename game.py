@@ -7,6 +7,7 @@ from numpy import random
 from hands import *
 from determine_hand import best_hand
 from copy import copy
+from decimal import *
 
 
 class Deck:
@@ -45,8 +46,8 @@ class Player:
         self.name = name
         self.seat = seat_num
         self.cards = []
-        self.stack = 0.0
-        self.bet = 0.0
+        self.stack = Decimal(0)
+        self.bet = Decimal(0)
         self.sitting_out = False
         self.comments = ""
         self.hand = None
@@ -115,8 +116,8 @@ class Game:
 
     Attributes:
         num_players (int): The number of players sitting at this table.
-        small_blind (float): The size of the small blind.
-        big_blind (float): The size of the big blind.
+        small_blind (Decimal): The size of the small blind.
+        big_blind (Decimal): The size of the big blind.
         show_cards (bool): Whether hole cards should be revealed in the game state printout.
     """
     def __init__(self, num_players, small_blind, big_blind, show_cards=True):
@@ -129,10 +130,10 @@ class Game:
         # TODO: self.actions = []
         self.button = self.determine_button(self.players)
         self.players_in_hand = copy(self.players)
-        self.pot = 0.0
+        self.pot = Decimal(0)
         self.small_blind = small_blind
         self.big_blind = big_blind
-        self.previous_bet = 0.0
+        self.previous_bet = Decimal(0)
 
     def get_player_at_seat(self, seat_num):
         """Returns Player at the specified seat number."""
@@ -177,7 +178,7 @@ class Game:
 
     def start_game(self):
         for p in self.players:
-            p.set_stack(100 * self.big_blind)
+            p.set_stack(Decimal(100) * self.big_blind)
         self.play_hand()
 
     def play_hand(self):
@@ -295,7 +296,7 @@ class Game:
             if p.get_hand() > max_so_far:
                 max_so_far = p.get_hand()
                 winner = p
-        if self.pot == 0.0:
+        if self.pot == 0:
             pot_str = ''
         else:
             pot_str = ' ($' + str(self.pot) + ')'
@@ -367,10 +368,10 @@ class Game:
                     if action == 'fold' or action == 'check' or action == 'bet':
                         break
                     else:
-                        print("Invalid input. Valid inputs: fold, call")
+                        print("Invalid input. Valid inputs: fold, call, bet")
 
             if action == "bet" or action == "raise":
-                bet_size = float(input("What is {0}'s {1}?: ".format(player.get_name(), action)))
+                bet_size = Decimal(input("What is {0}'s {1}?: ".format(player.get_name(), action)))
                 try:
                     self.bet(player, bet_size)
                     player.set_comments("{0}s: ${1}".format(action, bet_size))
@@ -395,9 +396,9 @@ class Game:
             break
 
     def clear_actions(self):
-        self.previous_bet = 0.0
+        self.previous_bet = Decimal(0)
         for p in self.players:
-            p.set_bet(0.0)
+            p.set_bet(Decimal(0))
             p.set_comments("")
 
     def bet(self, player, amount):

@@ -1,4 +1,5 @@
 import game
+from decimal import *
 
 
 def main():
@@ -8,8 +9,8 @@ def main():
     num_players = int(input("How many players?: "))
     while True:
         try:
-            small_blind = float(input("Small blind?: "))
-            big_blind = float(input("Big blind?: "))
+            small_blind = Decimal(input("Small blind?: "))
+            big_blind = Decimal(input("Big blind?: "))
             break
         except ValueError:
             print('Invalid input detected.')

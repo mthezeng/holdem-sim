@@ -26,9 +26,9 @@ Clone this repository, then run:
 
 ## Known issues
 
-* There is currently no data validation on betting. A player could bet more than their entire stack, or even a negative amount (increasing their stack!).
 * Float arithmetic sometimes produces numbers that need to be formatted (e.g. $10.530000000000001)
 * Six is not pluralized correctly in hands.py (e.g. ""Two pair, fives full of sixs"")
 * Currently, only one hand at a time is supported.
 * No logic exists to allow players to move ALL IN properly.
 	* In the same vein, no logic exists to calculate side pots.
+* If a player has already placed a bet and was raised, they only need to call the difference.
