@@ -36,10 +36,9 @@ class DetermineHand:
 
     def identify(self):
         """Returns what kind of five-card poker hand is represented in this instance."""
-        # store results of flush and straight so that they are not called twice
-        # TODO: no need to check for certain kinds of hands if we know something from earlier was false
         if not self._no_duplicates():
             raise ValueError("Hand appears to contain multiple of the same card.")
+        # store results of flush and straight so that they are not called twice
         flush = self._is_flush()
         straight = self._is_straight()
         if flush and straight:

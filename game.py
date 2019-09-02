@@ -172,12 +172,12 @@ class Game:
                 hole_cards = p.get_hole_cards()
             else:
                 hole_cards = ""
-            print("  Seat {0} ({1}) {2}{3} {4}".format(
-                p.get_seat_num(), p.get_name(), button, hole_cards, p.get_comments()))
+            print("  Seat {0} [{1}] ({2}) {3}{4} {5}".format(
+                p.get_seat_num(), p.get_stack(), p.get_name(), button, hole_cards, p.get_comments()))
 
     def start_game(self):
-        # for p in self.players:
-        #     p.set_stack(100 * self.big_blind)
+        for p in self.players:
+            p.set_stack(100 * self.big_blind)
         self.play_hand()
 
     def play_hand(self):
@@ -252,10 +252,10 @@ class Game:
         while len(cur_player.get_hole_cards()) < 2:
             self.deck.deal(cur_player)
             if self.show_cards:
-                card = ' ' + str(cur_player.get_hole_cards()[-1])
+                card = str(cur_player.get_hole_cards()[-1])
             else:
                 card = ''
-            print("Card{0} dealt to {1}.".format(card, cur_player))
+            print("Seat {0} ({1}) dealt {2}".format(cur_player.get_seat_num(), cur_player.get_name(), card))
             cur_player = next(turn_gen)
         self.show_game_state()
 
@@ -298,8 +298,13 @@ class Game:
         if self.pot == 0.0:
             pot_str = ''
         else:
-            pot_str = ' (' + str(self.pot) + ')'
+            pot_str = ' ($' + str(self.pot) + ')'
         print('-----\n{0} wins{1} with {2}'.format(winner, pot_str, max_so_far))
+
+    def no_showdown(self):
+        assert len(self.players_in_hand) == 1
+        winner = self.players_in_hand[0]
+        print('-----\n{0} wins ${1}.'.format(winner, self.pot))
 
     def get_players(self):
         return self.players
@@ -329,6 +334,7 @@ class Game:
             if (p is first_to_act and self.previous_bet == 0) or \
                     len(self.players_in_hand) == 1 or (0 < self.previous_bet == p.get_bet()):
                 break
+            self.show_game_state()
             self.get_action(p)
 
         self.clear_actions()
@@ -336,18 +342,48 @@ class Game:
     def get_action(self, player):
         while True:
             print('Seat {0} ({1}) to act. '.format(player.get_seat_num(), player.get_name()), end='')
+
             if self.previous_bet != 0.0:
-                action = input("Fold/Call ${0}/Raise?: ".format(self.previous_bet))
+                if player.get_stack() > self.previous_bet:
+                    while True:
+                        action = input("Fold/Call ${0}/Raise?: ".format(self.previous_bet))
+                        action = action.lower()
+                        if action == 'fold' or action == 'call' or action == 'raise':
+                            break
+                        else:
+                            print("Invalid input. Valid inputs: fold, call, raise")
+                else:
+                    while True:
+                        action = input("Fold/Call ${0} (all in)?: ".format(player.get_stack()))
+                        action = action.lower()
+                        if action == 'fold' or action == 'call':
+                            break
+                        else:
+                            print("Invalid input. Valid inputs: fold, call")
             else:
-                action = input("Fold/Check/Bet?: ")
-                action = action.lower()
+                while True:
+                    action = input("Fold/Check/Bet?: ")
+                    action = action.lower()
+                    if action == 'fold' or action == 'check' or action == 'bet':
+                        break
+                    else:
+                        print("Invalid input. Valid inputs: fold, call")
+
             if action == "bet" or action == "raise":
                 bet_size = float(input("What is {0}'s {1}?: ".format(player.get_name(), action)))
-                self.bet(player, bet_size)
-                player.set_comments("{0}s: ${1}".format(action, bet_size))
+                try:
+                    self.bet(player, bet_size)
+                    player.set_comments("{0}s: ${1}".format(action, bet_size))
+                except ValueError:
+                    print("Invalid {0} size.".format(action))
+                    continue
             elif action == "call":
-                self.bet(player, self.previous_bet)
-                player.set_comments("calls: ${0}".format(self.previous_bet))
+                if player.get_stack() < self.previous_bet:
+                    self.bet(player, player.get_stack())
+                    player.set_comments("calls: ${0}".format(player.get_stack()))
+                else:
+                    self.bet(player, self.previous_bet)
+                    player.set_comments("calls: ${0}".format(self.previous_bet))
             elif action == "check":
                 player.set_comments("checks")
             elif action == "fold":
@@ -357,7 +393,6 @@ class Game:
                 print('Invalid input detected.')
                 continue
             break
-        self.show_game_state()
 
     def clear_actions(self):
         self.previous_bet = 0.0
@@ -366,6 +401,8 @@ class Game:
             p.set_comments("")
 
     def bet(self, player, amount):
+        if amount > player.get_stack():
+            raise ValueError("Bet amount is greater than stack size of the player.")
         player.change_stack(-amount)
         player.set_bet(amount)
         self.pot += amount
@@ -375,8 +412,3 @@ class Game:
         if self.button() + 2 < self.num_players:
             return player.get_seat_num() == self.button() + 2
         return player.get_seat_num() == ((self.button() + 2) % self.num_players) + 1
-
-    def no_showdown(self):
-        assert len(self.players_in_hand) == 1
-        winner = self.players_in_hand[0]
-        print('-----\n{0} wins {1}.'.format(winner, self.pot))
