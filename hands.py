@@ -38,16 +38,24 @@ class Card:
         13: 'king'
     }
 
-    def __init__(self, number, suit):
+    def __init__(self, number, suit=None):
         """Constructor for the Card class."""
-        if not isinstance(number, int):
-            raise TypeError('number must be an integer')
-        if not(1 <= number <= 13):
-            raise ValueError('number must be between 1 and 13, inclusive')
-        if not isinstance(suit, Suit):
-            raise TypeError('suit must be a string')
-        self.num = number
-        self.suit = suit
+        if isinstance(number, str):
+            # lazy way of initializing Card from 'Ah' or '7d' etc.
+            try:
+                self.num = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'].index(number[0].upper()) + 1
+                self.suit = { 'h': Suit.HEARTS, 'd': Suit.DIAMONDS, 'c': Suit.CLUBS, 's': Suit.SPADES }[number[1].lower()]
+            except:
+                raise ValueError('Invalid constructor argument')
+        else:
+            if not isinstance(number, int):
+                raise TypeError('number must be an integer')
+            if not(1 <= number <= 13):
+                raise ValueError('number must be between 1 and 13, inclusive')
+            if not isinstance(suit, Suit):
+                raise TypeError('suit must be a string')
+            self.num = number
+            self.suit = suit
 
     def __lt__(self, other):
         """
@@ -70,7 +78,7 @@ class Card:
 
     def __eq__(self, other):
         """Enables the equality operation for comparing the value of cards."""
-        return self.get_num() == other.get_num()
+        return self.get_num() == other.get_num() and self.get_suit() == other.get_suit()
 
     def __ne__(self, other):
         """Enables the non-equality operation for comparing the value of cards."""
@@ -428,7 +436,7 @@ class ThreeOfAKind(Hand):
                 return Card.lt(self.num, other.num)
             for i in range(len(self.kickers)):
                 if self.kickers[i] != other.kickers[i]:
-                    return Card.lt(self.kickers[i], other.kickers[i])
+                    return Card.lt(self.kickers[i].get_num(), other.kickers[i].get_num())
             return False
         return self.value < other.value
 
