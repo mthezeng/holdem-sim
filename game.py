@@ -7,6 +7,8 @@ from numpy import random
 from hands import *
 from determine_hand import best_hand
 from copy import copy
+from decimal import *
+
 
 class Deck:
     """Represents an ordinary, 52-card playing deck."""
@@ -44,7 +46,8 @@ class Player:
         self.name = name
         self.seat = seat_num
         self.cards = []
-        self.stack = 0
+        self.stack = Decimal(0)
+        self.bet = Decimal(0)
         self.sitting_out = False
         self.comments = ""
         self.hand = None
@@ -87,6 +90,12 @@ class Player:
     def set_hand(self, hand):
         self.hand = hand
 
+    def get_bet(self):
+        return self.bet
+
+    def set_bet(self, bet):
+        self.bet = bet
+
     def sit_out(self):
         self.sitting_out = True
 
@@ -98,16 +107,33 @@ class Player:
 
 
 class Game:
-    def __init__(self, num_players, show_cards=True):
+    """
+    Represents a game of Texas hold'em.
+
+    In this class, when start_game() is called, all players are dealt their hole cards.
+    The gameplay will pause to ask players for their desired actions when it becomes their
+    turn to act and they still have chips in their stack.
+
+    Attributes:
+        num_players (int): The number of players sitting at this table.
+        small_blind (Decimal): The size of the small blind.
+        big_blind (Decimal): The size of the big blind.
+        show_cards (bool): Whether hole cards should be revealed in the game state printout.
+    """
+    def __init__(self, num_players, small_blind, big_blind, show_cards=True):
         self.num_players = num_players
         self.show_cards = show_cards
         self.players = [Player(input("Seat {0} name: ".format(i)), i) for i in range(1, num_players + 1)]
         self.board = []
         self.deck = Deck()
         self.deck.shuffle()
-        self.actions = []
+        # TODO: self.actions = []
         self.button = self.determine_button(self.players)
         self.players_in_hand = copy(self.players)
+        self.pot = Decimal(0)
+        self.small_blind = small_blind
+        self.big_blind = big_blind
+        self.previous_bet = Decimal(0)
 
     def get_player_at_seat(self, seat_num):
         """Returns Player at the specified seat number."""
@@ -116,7 +142,8 @@ class Game:
     def take_turns(self):
         """Generator which starts from the small blind and rotates clockwise."""
         i = 0
-        while i < len(self.players_in_hand):
+        cached_size = len(self.players_in_hand)
+        while i < cached_size:
             if self.players_in_hand[i] is self.button:
                 i += 1
                 break
@@ -124,16 +151,20 @@ class Game:
         while True:
             try:
                 yield self.players_in_hand[i]
-                i += 1
+                if len(self.players_in_hand) != cached_size:
+                    # if player has folded, don't advance index
+                    cached_size = len(self.players_in_hand)
+                else:
+                    i += 1
             except IndexError:
                 i = 0
 
     def show_game_state(self):
         print('-----\nCurrent game state:')
-        # print('Pot: ${0}'.format(self.pot))
+        print('Current pot: ${0}'.format(self.pot))
         if self.board:
             print('Board: {0}'.format(self.board))
-        for p in self.players:
+        for p in self.players_in_hand:
             if p is self.button:
                 button = "[BTN] "
             else:
@@ -142,22 +173,46 @@ class Game:
                 hole_cards = p.get_hole_cards()
             else:
                 hole_cards = ""
-            print("  Seat {0} ({1}) {2}{3} {4}".format(
-                p.get_seat_num(), p.get_name(), button, hole_cards, p.get_comments()))
+            print("  Seat {0} [{1}] ({2}) {3}{4} {5}".format(
+                p.get_seat_num(), p.get_stack(), p.get_name(), button, hole_cards, p.get_comments()))
 
     def start_game(self):
-        # for p in self.players:
-        #     p.set_stack(100 * self.big_blind)
+        for p in self.players:
+            p.set_stack(Decimal(100) * self.big_blind)
         self.play_hand()
 
     def play_hand(self):
+        # PRE-FLOP
         self.deal_hole_cards()
-        # self.post_blinds()
-        self.show_flop()
-        self.show_turn()
-        self.show_river()
-        self.showdown()
+        self.post_blinds()
+        self.round_of_betting(blinds=True)
 
+        # FLOP
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
+        self.show_flop()
+        self.round_of_betting()
+
+        # TURN
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
+        self.show_turn()
+        self.round_of_betting()
+
+        # RIVER
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
+        self.show_river()
+        self.round_of_betting()
+
+        # SHOWDOWN
+        if len(self.players_in_hand) == 1:
+            self.no_showdown()
+            return
+        self.showdown()
 
     def determine_button(self, players):
         """Deals every player one card face-up. Highest value card determines button."""
@@ -198,10 +253,10 @@ class Game:
         while len(cur_player.get_hole_cards()) < 2:
             self.deck.deal(cur_player)
             if self.show_cards:
-                card = ' ' + str(cur_player.get_hole_cards()[-1])
+                card = str(cur_player.get_hole_cards()[-1])
             else:
                 card = ''
-            print("Card{0} dealt to {1}.".format(card, cur_player))
+            print("Seat {0} ({1}) dealt {2}".format(cur_player.get_seat_num(), cur_player.get_name(), card))
             cur_player = next(turn_gen)
         self.show_game_state()
 
@@ -232,6 +287,7 @@ class Game:
 
     def showdown(self):
         # TODO: split pot
+        """Sets self.winner to the winner of the previous hand."""
         for p in self.players_in_hand:
             p.set_hand(best_hand(p.get_hole_cards() + self.board))
         max_so_far = self.players_in_hand[0].get_hand()
@@ -240,18 +296,19 @@ class Game:
             if p.get_hand() > max_so_far:
                 max_so_far = p.get_hand()
                 winner = p
-        print('-----\n{0} wins with {1}'.format(winner, max_so_far))
+        if self.pot == 0:
+            pot_str = ''
+        else:
+            pot_str = ' ($' + str(self.pot) + ')'
+        print('-----\n{0} wins{1} with {2}'.format(winner, pot_str, max_so_far))
+
+    def no_showdown(self):
+        assert len(self.players_in_hand) == 1
+        winner = self.players_in_hand[0]
+        print('-----\n{0} wins ${1}.'.format(winner, self.pot))
 
     def get_players(self):
         return self.players
-
-
-class GameWithBetting(Game):
-    def __init__(self, num_players, small_blind, big_blind, show_cards=True):
-        super().__init__(num_players, show_cards)
-        self.small_blind = small_blind
-        self.big_blind = big_blind
-        self.pot = 0.0
 
     def post_blinds(self):
         turns = self.take_turns()
@@ -260,39 +317,99 @@ class GameWithBetting(Game):
         if self.num_players == 2:
             small, big = big, small
         self.bet(small, self.small_blind)
-        small.set_comments("posts SB: {0}".format(self.small_blind))
+        small.set_comments("posts SB: ${0}".format(self.small_blind))
         self.bet(big, self.big_blind)
-        big.set_comments("posts BB: {0}".format(self.big_blind))
+        big.set_comments("posts BB: ${0}".format(self.big_blind))
         self.show_game_state()
 
     def round_of_betting(self, blinds=False):
-        # TODO: get bet sizing from all players
-        bet_prior = blinds
         turns = self.take_turns()
         if blinds:
-            next(turns)
-            next(turns)
+            next(turns)  # small blind
+            next(turns)  # big blind
+
+        first_to_act = next(turns)
+        self.get_action(first_to_act)
+
         for p in turns:
-            print('Seat {0} ({1}) to act. '.format(p.get_seat_num(), p.get_name()), end='')
-            if bet_prior:
-                action = input("Fold/Call/Raise?: ")
+            if (p is first_to_act and self.previous_bet == 0) or \
+                    len(self.players_in_hand) == 1 or (0 < self.previous_bet == p.get_bet()):
+                break
+            self.show_game_state()
+            self.get_action(p)
+
+        self.clear_actions()
+
+    def get_action(self, player):
+        while True:
+            print('Seat {0} ({1}) to act. '.format(player.get_seat_num(), player.get_name()), end='')
+
+            if self.previous_bet != 0.0:
+                if player.get_stack() > self.previous_bet:
+                    while True:
+                        action = input("Fold/Call ${0}/Raise?: ".format(self.previous_bet))
+                        action = action.lower()
+                        if action == 'fold' or action == 'call' or action == 'raise':
+                            break
+                        else:
+                            print("Invalid input. Valid inputs: fold, call, raise")
+                else:
+                    while True:
+                        action = input("Fold/Call ${0} (all in)?: ".format(player.get_stack()))
+                        action = action.lower()
+                        if action == 'fold' or action == 'call':
+                            break
+                        else:
+                            print("Invalid input. Valid inputs: fold, call")
             else:
-                action = input("Fold/Check/Bet?: ")
-            if action == "Bet" or action == "bet":
-                bet_size = int(input("What is p's bet?: "))
-                self.bet(p, bet_size)
-                p.set_comments("bets: {0}")
-                self.show_game_state()
+                while True:
+                    action = input("Fold/Check/Bet?: ")
+                    action = action.lower()
+                    if action == 'fold' or action == 'check' or action == 'bet':
+                        break
+                    else:
+                        print("Invalid input. Valid inputs: fold, call, bet")
+
+            if action == "bet" or action == "raise":
+                bet_size = Decimal(input("What is {0}'s {1}?: ".format(player.get_name(), action)))
+                try:
+                    self.bet(player, bet_size)
+                    player.set_comments("{0}s: ${1}".format(action, bet_size))
+                except ValueError:
+                    print("Invalid {0} size.".format(action))
+                    continue
+            elif action == "call":
+                if player.get_stack() < self.previous_bet:
+                    self.bet(player, player.get_stack())
+                    player.set_comments("calls: ${0}".format(player.get_stack()))
+                else:
+                    self.bet(player, self.previous_bet)
+                    player.set_comments("calls: ${0}".format(self.previous_bet))
+            elif action == "check":
+                player.set_comments("checks")
+            elif action == "fold":
+                self.players_in_hand.remove(player)
+                player.set_comments("folds")
+            else:
+                print('Invalid input detected.')
+                continue
+            break
+
+    def clear_actions(self):
+        self.previous_bet = Decimal(0)
+        for p in self.players:
+            p.set_bet(Decimal(0))
+            p.set_comments("")
 
     def bet(self, player, amount):
+        if amount > player.get_stack():
+            raise ValueError("Bet amount is greater than stack size of the player.")
         player.change_stack(-amount)
+        player.set_bet(amount)
         self.pot += amount
+        self.previous_bet = amount
 
-
-class Hero:
-
-    """A view of the Game class that focuses on one player's hole cards."""
-    def __init__(self, game, player):
-        self.game = game
-        self.player = player
-
+    def is_big_blind(self, player):
+        if self.button() + 2 < self.num_players:
+            return player.get_seat_num() == self.button() + 2
+        return player.get_seat_num() == ((self.button() + 2) % self.num_players) + 1

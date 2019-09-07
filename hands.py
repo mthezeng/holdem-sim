@@ -428,7 +428,7 @@ class ThreeOfAKind(Hand):
                 return Card.lt(self.num, other.num)
             for i in range(len(self.kickers)):
                 if self.kickers[i] != other.kickers[i]:
-                    return Card.lt(self.kickers[i], other.kickers[i])
+                    return self.kickers[i] < other.kickers[i]
             return False
         return self.value < other.value
 

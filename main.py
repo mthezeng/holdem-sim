@@ -1,4 +1,5 @@
 import game
+from decimal import *
 
 
 def main():
@@ -6,10 +7,14 @@ def main():
     print("Originally developed by Michael Zeng")
     print("-----")
     num_players = int(input("How many players?: "))
-    # small_blind = float(input("Small blind?: "))
-    # big_blind = float(input("Big blind?: "))
-    # g = game.GameWithBetting(num_players, small_blind, big_blind)
-    g = game.Game(num_players)
+    while True:
+        try:
+            small_blind = Decimal(input("Small blind?: "))
+            big_blind = Decimal(input("Big blind?: "))
+            break
+        except ValueError:
+            print('Invalid input detected.')
+    g = game.Game(num_players, small_blind, big_blind)
     g.start_game()
 
 

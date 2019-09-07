@@ -10,7 +10,7 @@ from itertools import combinations
 
 class DetermineHand:
     """
-    This class contains a number of methods for identifying poker hands given the five cards that comprise them.
+    This class contains methods for identifying poker hands given the five cards that comprise them.
 
     Attributes:
         cards (list): A list of five Card instances comprising a poker hand.
@@ -36,10 +36,9 @@ class DetermineHand:
 
     def identify(self):
         """Returns what kind of five-card poker hand is represented in this instance."""
-        # store results of flush and straight so that they are not called twice
-        # TODO: no need to check for certain kinds of hands if we know something from earlier was false
         if not self._no_duplicates():
             raise ValueError("Hand appears to contain multiple of the same card.")
+        # store results of flush and straight so that they are not called twice
         flush = self._is_flush()
         straight = self._is_straight()
         if flush and straight:
@@ -136,7 +135,7 @@ class DetermineHand:
         return True
 
 
-def get_hand(cards):
+def identify_hand(cards):
     """A convenient function for returning the hand representation given five cards."""
     return DetermineHand(cards).identify()
 
@@ -157,4 +156,4 @@ def best_hand(cards):
     Returns:
         Hand: A subclass of Hand that corresponds to the best five-card poker hand.
     """
-    return max([get_hand(list(c)) for c in combinations(cards, 5)])
+    return max([identify_hand(list(c)) for c in combinations(cards, 5)])

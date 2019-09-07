@@ -18,8 +18,17 @@ Clone this repository, then run:
 
 * **main.py:** Asks for number and names of players, then simulates rounds of Texas hold'em.
 * **determine_hand.py:** This file contains utilities for determining the winning poker hand given lists of cards.
-** Contains the logic for determining what kind of poker hand we have given the cards.
+	* Contains the logic for determining what kind of poker hand we have given the cards.
 * **game.py:** This file contains core structures relevant to the game of Texas hold'em.
-** Contains data structures that represent a deck of cards, a game of poker, etc.
+	* Contains classes that represent a deck of cards, a game of poker, etc.
 * **hands.py:** This file contains a number of structures representing objects relevant to playing cards and poker hands.
-** Contains data structures that represent a playing card, a suit, and the kinds of poker hands like straights, flushes, and full houses.
+	* Contains classes that represent a playing card, a suit, and the kinds of poker hands like straights, flushes, and full houses.
+
+## Known issues
+
+* Float arithmetic sometimes produces numbers that need to be formatted (e.g. $10.530000000000001)
+* Six is not pluralized correctly in hands.py (e.g. ""Two pair, fives full of sixs"")
+* Currently, only one hand at a time is supported.
+* No logic exists to allow players to move ALL IN properly.
+	* In the same vein, no logic exists to calculate side pots.
+* If a player has already placed a bet and was raised, they only need to call the difference.
