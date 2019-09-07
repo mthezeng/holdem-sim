@@ -12,8 +12,8 @@ among the seven cards exposed to them: their hole cards, the flop, the turn, and
 
 Clone this repository, then run in the console:
 
-``cd poker``
-``python3 main.py``
+    cd poker
+    python3 main.py
 
 ## Django web framework
 
