@@ -8,15 +8,20 @@ betting, an additional card is exposed face-up (called "the turn"), and after a 
 and final card (called "the river") is exposed face-up. A player's hand is the best five-card poker hand
 among the seven cards exposed to them: their hole cards, the flop, the turn, and the river.
 
-## Running the simulation
+## Running the text-based simulation
 
-Clone this repository, then run:
+Clone this repository, then run in the console:
 
+``cd poker``
 ``python3 main.py``
+
+## Django web framework
+
+Currently, within the Django web framework, code is written which allow users to create accounts and maintain user profiles. This will be expanded in the near future to allow access to the poker simulation.
 
 ## Descriptions
 
-* **main.py:** Asks for number and names of players, then simulates rounds of Texas hold'em.
+* **main.py:** Asks for number and names of players, then simulates rounds of Texas hold'em in the console.
 * **determine_hand.py:** This file contains utilities for determining the winning poker hand given lists of cards.
 	* Contains the logic for determining what kind of poker hand we have given the cards.
 * **game.py:** This file contains core structures relevant to the game of Texas hold'em.
@@ -26,7 +31,6 @@ Clone this repository, then run:
 
 ## Known issues
 
-* Float arithmetic sometimes produces numbers that need to be formatted (e.g. $10.530000000000001)
 * Six is not pluralized correctly in hands.py (e.g. ""Two pair, fives full of sixs"")
 * Currently, only one hand at a time is supported.
 * No logic exists to allow players to move ALL IN properly.
